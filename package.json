@@ -1,0 +1,43 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "server.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.js",
+    "server": "nodemon server.js",
+    "client": "yarn --cwd ohif start"
+  },
+  "dependencies": {
+    "@turbodocx/html-to-docx": "^1.13.4",
+    "archiver": "^7.0.1",
+    "axios": "^1.12.2",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dcmjs": "^0.45.0",
+    "dcmjs-dimse": "^0.3.1",
+    "dicom-dimse-native": "^2.4.6",
+    "docx": "^9.5.1",
+    "docxtemplater": "^3.66.2",
+    "docxtemplater-image-module-free": "^1.1.1",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0",
+    "express-fileupload": "^1.5.2",
+    "html-docx-js": "^0.3.1",
+    "image-size": "^2.0.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.4",
+    "multer": "^2.0.2",
+    "pizzip": "^3.2.0",
+    "puppeteer": "^24.26.1",
+    "qrcode": "^1.5.4",
+    "qrcode-terminal": "^0.12.0",
+    "sharp": "^0.34.5",
+    "uuid": "^14.0.0",
+    "whatsapp-web.js": "^1.34.6"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "nodemon": "^3.1.10"
+  }
+}

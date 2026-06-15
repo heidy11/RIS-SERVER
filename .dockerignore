@@ -1,0 +1,13 @@
+node_modules
+npm-debug.log
+yarn-error.log
+.git
+.env
+.wwebjs_auth
+.wwebjs_cache
+documents/*
+uploads/*
+temp/*
+core.class.log
+queue.class.log
+dicom.log

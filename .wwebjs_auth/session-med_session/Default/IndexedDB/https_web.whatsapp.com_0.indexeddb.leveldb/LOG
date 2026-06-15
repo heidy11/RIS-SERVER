@@ -1,0 +1,5 @@
+2026/03/13-06:09:15.205 58bc Creating DB /home/kaval/Documentos/dev/Inge-Med/ohif-viewer-custom-medservice/server/.wwebjs_auth/session-med_session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb since it was missing.
+2026/03/13-06:09:17.371 58bc Reusing MANIFEST /home/kaval/Documentos/dev/Inge-Med/ohif-viewer-custom-medservice/server/.wwebjs_auth/session-med_session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/03/13-09:37:20.123 58be Level-0 table #5: started
+2026/03/13-09:37:20.934 58be Level-0 table #5: 1077444 bytes OK
+2026/03/13-09:37:22.186 58be Delete type=0 #3

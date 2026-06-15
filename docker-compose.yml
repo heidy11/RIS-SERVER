@@ -1,0 +1,50 @@
+services:
+  # Servicio de Base de Datos MongoDB
+  mongodb-server:
+    image: mongo:6.0
+    container_name: mongodb-server
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - ris-network
+
+  # Servicio de Servidor Backend (Express + Puppeteer + Whatsapp)
+  backend-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend-server
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb-server
+    env_file:
+      - .env
+    environment:
+      # Sobreescribe la MONGO_URI del archivo .env local para usar el contenedor de mongo interno
+      - MONGO_URI=mongodb://mongodb-server:27017/ohif-db
+      - PORT=5000
+    volumes:
+      # Persistencia de archivos locales subidos para no perderlos al reconstruir
+      - ./uploads:/usr/src/app/uploads
+      - ./documents:/usr/src/app/documents
+      - ./temp:/usr/src/app/temp
+      # Persistencia de la sesión autenticada de WhatsApp Web
+      - ./.wwebjs_auth:/usr/src/app/.wwebjs_auth
+      - ./.wwebjs_cache:/usr/src/app/.wwebjs_cache
+    networks:
+      - ris-network
+
+# Red interna para comunicar los contenedores de forma segura
+networks:
+  ris-network:
+    driver: bridge
+
+# Volúmenes con nombre para persistir los datos de la base de datos de manera segura
+volumes:
+  mongo_data:
+    driver: local

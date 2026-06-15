@@ -1,0 +1,45 @@
+[
+  {
+    "_id": "69d2f5099e44db27e7fdbc57",
+    "patientId": "3423",
+    "firstName": "dsfsf",
+    "lastName": "fsfsdf",
+    "dateOfBirth": "1978-04-14T00:00:00.000Z",
+    "gender": "U",
+    "createdAt": "2026-04-05T23:49:29.543Z",
+    "updatedAt": "2026-04-05T23:49:43.331Z",
+    "__v": 0
+  },
+  {
+    "_id": "69d96390fb57b28575608b36",
+    "patientId": "ADS-23424",
+    "firstName": "Alvaro ",
+    "lastName": "Medrano",
+    "dateOfBirth": "2002-02-09T00:00:00.000Z",
+    "gender": "M",
+    "documentId": "9199298",
+    "phone": "75281378",
+    "email": "aljak1815@gmail.com",
+    "address": "88921 sdbdjsfbjsdfb",
+    "createdAt": "2026-04-10T20:54:40.577Z",
+    "updatedAt": "2026-04-10T20:55:11.740Z",
+    "__v": 0
+  },
+  {
+    "_id": "69dda1791f309e50e7c35284",
+    "patientId": "dasdasd",
+    "firstName": "sadasd",
+    "lastName": "dasdasd",
+    "dateOfBirth": "1998-03-11T00:00:00.000Z",
+    "gender": "M",
+    "documentId": "asdasd",
+    "phone": "223323",
+    "email": "dsadas@gmail.com",
+    "address": "adsaddsa",
+    "allergies": "",
+    "clinicalNotes": "",
+    "createdAt": "2026-04-14T02:07:53.198Z",
+    "updatedAt": "2026-04-14T02:07:53.198Z",
+    "__v": 0
+  }
+]

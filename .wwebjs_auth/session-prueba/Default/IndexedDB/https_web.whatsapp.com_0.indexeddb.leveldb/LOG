@@ -1,0 +1,14 @@
+2026/03/13-05:49:30.964 233c Creating DB /home/kaval/Documentos/dev/Inge-Med/ohif-viewer-custom-medservice/server/.wwebjs_auth/session-prueba/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb since it was missing.
+2026/03/13-05:49:32.164 233c Reusing MANIFEST /home/kaval/Documentos/dev/Inge-Med/ohif-viewer-custom-medservice/server/.wwebjs_auth/session-prueba/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/03/13-07:14:09.724 2333 Level-0 table #5: started
+2026/03/13-07:14:10.989 2333 Level-0 table #5: 1114636 bytes OK
+2026/03/13-07:14:12.492 2333 Delete type=0 #3
+2026/03/13-10:11:40.839 2335 Level-0 table #7: started
+2026/03/13-10:11:42.316 2335 Level-0 table #7: 859777 bytes OK
+2026/03/13-10:11:45.498 2335 Delete type=0 #4
+2026/03/13-10:12:26.820 2335 Compacting 1@1 + 1@2 files
+2026/03/13-10:12:28.746 2335 Generated table #8@1: 9770 keys, 822978 bytes
+2026/03/13-10:12:28.746 2335 Compacted 1@1 + 1@2 files => 822978 bytes
+2026/03/13-10:12:30.465 2335 compacted to: files[ 0 0 1 0 0 0 0 ]
+2026/03/13-10:12:30.465 2335 Delete type=2 #5
+2026/03/13-10:12:30.466 2335 Delete type=2 #7
