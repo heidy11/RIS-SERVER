@@ -34,6 +34,11 @@ whatsappService.initialize();
 const hl7Service = require('./src/services/hl7.service.js');
 hl7Service.initialize();
 
+// RIS-PACS Adapter: worker que empuja las órdenes a la Modality Worklist de
+// DCM4CHEE. No hace nada salvo que MWL_ENABLED=true en el .env.
+const mwlWorker = require('./src/services/mwl/mwlSync.worker.js');
+mwlWorker.start();
+
 // Permitir acceso a archivos en la carpeta "documents"
 const path = require('path');
 app.use('/documents', express.static(path.join(__dirname, 'documents')));

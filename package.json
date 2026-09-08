@@ -6,7 +6,11 @@
   "scripts": {
     "start": "node server.js",
     "server": "nodemon server.js",
-    "client": "yarn --cwd ohif start"
+    "client": "yarn --cwd ohif start",
+    "test": "node --test \"test/**/*.test.js\"",
+    "pacs-lab:up": "docker compose -f pacs-lab/docker-compose.yml up -d",
+    "pacs-lab:down": "docker compose -f pacs-lab/docker-compose.yml down",
+    "mwl": "node pacs-lab/scripts/mwl.js"
   },
   "dependencies": {
     "@turbodocx/html-to-docx": "^1.13.4",

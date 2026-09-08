@@ -1,0 +1,71 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Laboratorio DCM4CHEE 5.x — Etapa 1A del documento de integracion RIS/PACS
+#
+# Levanta un dcm4chee-arc-light completo (MWL SCP + PACS + DICOMweb) en modo
+# "inseguro" (sin Keycloak), que es exactamente lo que el documento autoriza
+# para el laboratorio de la Etapa 1. En produccion se usa la variante -secure.
+#
+#   docker compose up -d
+#   docker compose logs -f arc     # esperar "WildFly ... started in"
+#
+# UI web:      http://localhost:8080/dcm4chee-arc/ui2
+# REST base:   http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs
+# DICOM:       localhost:11112   AE Title: DCM4CHEE
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  ldap:
+    image: dcm4che/slapd-dcm4chee:2.6.13-35.1
+    container_name: pacs-lab-ldap
+    restart: unless-stopped
+    ports:
+      - "389:389"
+    environment:
+      STORAGE_DIR: /storage/fs1
+    volumes:
+      - ldap_data:/var/lib/openldap/openldap-data
+      - ldap_config:/etc/openldap/slapd.d
+
+  db:
+    image: dcm4che/postgres-dcm4chee:17.9-35
+    container_name: pacs-lab-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: pacsdb
+      POSTGRES_USER: pacs
+      POSTGRES_PASSWORD: pacs
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  arc:
+    image: dcm4che/dcm4chee-arc-psql:5.35.1
+    container_name: pacs-lab-arc
+    restart: unless-stopped
+    ports:
+      - "8080:8080"    # HTTP  — UI2, DICOMweb (QIDO/WADO/STOW) y /rs/mwlitems
+      - "9990:9990"    # consola de administracion WildFly
+      - "11112:11112"  # DICOM DIMSE — aqui pegan C-ECHO / C-FIND MWL / C-STORE
+      - "2575:2575"    # HL7 MLLP
+    environment:
+      POSTGRES_DB: pacsdb
+      POSTGRES_USER: pacs
+      POSTGRES_PASSWORD: pacs
+      WILDFLY_WAIT_FOR: "ldap:389 db:5432"
+      # Zona horaria del archivo: importante para que las fechas/horas del SPS
+      # que envia el RIS coincidan con lo que el equipo ve en su consola.
+      TZ: America/La_Paz
+    depends_on:
+      - ldap
+      - db
+    volumes:
+      - arc_storage:/storage
+      - arc_wildfly:/opt/wildfly/standalone
+
+volumes:
+  ldap_data:
+  ldap_config:
+  db_data:
+  arc_storage:
+  arc_wildfly:

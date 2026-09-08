@@ -1,0 +1,23 @@
+{
+  "00080050": { "vr": "SH", "Value": ["US-TEST-001"] },
+  "00080090": { "vr": "PN", "Value": [{ "Alphabetic": "MEDICO^PRUEBA" }] },
+  "00100010": { "vr": "PN", "Value": [{ "Alphabetic": "TEST^US" }] },
+  "00100020": { "vr": "LO", "Value": ["TESTUS001"] },
+  "00100030": { "vr": "DA", "Value": ["19800101"] },
+  "00100040": { "vr": "CS", "Value": ["M"] },
+  "0020000D": { "vr": "UI", "Value": ["2.25.74345446968048839735161770676705047512"] },
+  "00321060": { "vr": "LO", "Value": ["ABDOMINAL ULTRASOUND"] },
+  "00401001": { "vr": "SH", "Value": ["RP-US-001"] },
+  "00400100": {
+    "vr": "SQ",
+    "Value": [{
+      "00400001": { "vr": "AE", "Value": ["US01"] },
+      "00080060": { "vr": "CS", "Value": ["US"] },
+      "00400002": { "vr": "DA", "Value": ["20260828"] },
+      "00400003": { "vr": "TM", "Value": ["103000"] },
+      "00400007": { "vr": "LO", "Value": ["ABDOMINAL ULTRASOUND"] },
+      "00400009": { "vr": "SH", "Value": ["SPS-US-001"] },
+      "00400020": { "vr": "CS", "Value": ["SCHEDULED"] }
+    }]
+  }
+}

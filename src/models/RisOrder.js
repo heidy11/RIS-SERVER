@@ -71,6 +71,40 @@ const risOrderSchema = new mongoose.Schema(
     paymentNotes: { type: String },
     paidAt:        { type: Date },
 
+    // ── Integración DICOM / Modality Worklist ─────────────────────────
+    // Study Instance UID: se genera una única vez al crear la orden y no cambia
+    // nunca. Es el identificador que une RIS → MWL → equipo → PACS → OHIF.
+    studyInstanceUid: { type: String, index: true, sparse: true, unique: true },
+
+    // Equipo asignado. Sirve para mandar la orden a una sala concreta cuando
+    // hay más de un equipo de la misma modalidad (p. ej. dos ecógrafos).
+    equipment: { type: mongoose.Schema.Types.ObjectId, ref: 'Equipment' },
+
+    // Scheduled Station AE Title del equipo que hará el estudio. Se resuelve
+    // en este orden: valor explícito aquí → AE Title del equipo asignado →
+    // equipo activo de esa modalidad → MWL_STATION_AET_<MODALIDAD> del .env.
+    stationAet: { type: String },
+
+    requestedProcedureId:       { type: String },
+    scheduledProcedureStepId:   { type: String },
+
+    // Estado de sincronización con la worklist de DCM4CHEE.
+    mwlSyncStatus: {
+      type: String,
+      enum: ['PENDING', 'SYNCED', 'ERROR', 'DISABLED'],
+      default: 'PENDING',
+      index: true,
+    },
+    mwlSyncedAt:  { type: Date },
+    mwlLastError: { type: String },
+
+    // Último estado que el equipo reportó por MPPS: IN PROGRESS, COMPLETED o
+    // DISCONTINUED. Lo escribe el equipo médico, no el RIS. DISCONTINUED no
+    // cambia el estado de la orden: significa que el estudio se abandonó y
+    // alguien tiene que mirarlo.
+    mppsStatus:    { type: String },
+    mppsUpdatedAt: { type: Date },
+
     // ── Teaching File / Docencia ───────────────────────────────────
     isTeachingFile:   { type: Boolean, default: false },
     teachingKeywords: { type: [String], default: [] },

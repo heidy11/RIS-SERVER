@@ -24,6 +24,7 @@ const slotRoutes = require('./slot.routes.js');            // Gestión de slots 
 const settingsRoutes = require('./settings.routes.js');    // Configuración general del sistema
 const whatsappRoutes = require('./whatsapp.route.js');     // Integración con WhatsApp (notificaciones/mensajes)
 const risRoutes = require('./ris.route.js');               // RIS (Radiology Information System)
+const mwlRoutes = require('./mwl.route.js');                // RIS-PACS Adapter (Modality Worklist)
 
 // ──────────────────────────────────────────────
 // Registro de rutas en el router principal
@@ -34,6 +35,7 @@ const risRoutes = require('./ris.route.js');               // RIS (Radiology Inf
 router.use('/server', serverRoutes);           // GET /api/server      → Estado del servidor
 router.use('/dicom', dicomRoutes);             // *   /api/dicom       → Operaciones DICOM
 router.use('/ris', risRoutes);                 // *   /api/ris         → Sistema de información radiológica
+router.use('/mwl', mwlRoutes);                 // *   /api/mwl         → Worklist DICOM / sincronización con DCM4CHEE
 router.use('/auth', authRoutes);               // POST /api/auth       → Autenticación de usuarios
 router.use('/usuarios', userRoutes);           // *   /api/usuarios    → CRUD de usuarios
 router.use('/pacientes', patientRoutes);       // *   /api/pacientes   → CRUD de pacientes

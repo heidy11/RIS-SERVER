@@ -166,7 +166,26 @@ class HL7Service {
     console.log(`[HL7] Orden ${accessionNumber} procesada exitosamente (ORM).`);
 
     // Reenviar a dcm4chee (Integración MWL)
+    //
+    // Desactivado por defecto: hay dos caminos posibles hacia la worklist y no
+    // deben quedar los dos activos. El oficial es el RIS-PACS Adapter, que crea
+    // la entrada MWL por REST desde `src/services/mwl/` cuando se agenda la
+    // orden. Si además se reenvía el ORM por HL7, dcm4chee genera una segunda
+    // entrada para la misma orden y el técnico ve al paciente duplicado en la
+    // consola del equipo.
+    //
+    // Poner HL7_FORWARD_TO_PACS=true solo si se decide que el origen de las
+    // órdenes es un sistema externo por HL7 y no el propio RIS. En ese caso hay
+    // que desactivar el adapter con MWL_ENABLED=false.
     try {
+      if (process.env.HL7_FORWARD_TO_PACS !== 'true') {
+        console.log(
+          '[HL7] Reenvío a dcm4chee omitido (HL7_FORWARD_TO_PACS != true). ' +
+            'La worklist la genera el RIS-PACS Adapter.'
+        );
+        return;
+      }
+
       const dcm4cheeHost = process.env.DCM4CHEE_HL7_HOST || '127.0.0.1';
       const dcm4cheePort = parseInt(process.env.DCM4CHEE_HL7_PORT || '2575');
 

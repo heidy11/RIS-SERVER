@@ -9,6 +9,23 @@ const RisTemplate = require('../models/RisTemplate');
 const RisInventory = require('../models/RisInventory');
 const RisCashRegister = require('../models/RisCashRegister');
 const RisCompany = require('../models/RisCompany');
+const mwlOutbox = require('../services/mwl/mwlOutbox.service');
+
+/**
+ * Encola una operación de Modality Worklist sin que un fallo del PACS pueda
+ * romper la operación del RIS.
+ *
+ * El agendamiento no puede depender de que DCM4CHEE esté sano: si el archivo
+ * está caído, la recepcionista tiene que poder registrar igual al paciente y
+ * la orden se sincroniza después por reintento.
+ */
+async function syncWorklist(fn, context) {
+  try {
+    await fn();
+  } catch (err) {
+    console.error(`[MWL] no se pudo encolar la sincronización (${context}): ${err.message}`);
+  }
+}
 
 const risController = {
   // --- Pacientes ---
@@ -82,7 +99,14 @@ const risController = {
       }
       const order = new RisOrder(orderData);
       await order.save();
-      res.status(201).json(order);
+
+      // Agendar → crear la entrada en la worklist del equipo.
+      await syncWorklist(
+        () => mwlOutbox.enqueueUpsert(order._id, 'CREATE'),
+        `createOrder ${order.accessionNumber}`
+      );
+
+      res.status(201).json(await RisOrder.findById(order._id));
     } catch (error) {
       if (error.code === 11000)
         return res.status(400).json({ error: 'Accession Number ya existe' });
@@ -94,7 +118,19 @@ const risController = {
       const { id } = req.params;
       const order = await RisOrder.findByIdAndUpdate(id, req.body, { new: true });
       if (!order) return res.status(404).json({ error: 'Orden no encontrada' });
-      res.json(order);
+
+      // Reprogramar → mismo Study UID y mismo SPS ID, con la fecha/hora/estación
+      // nuevas. DCM4CHEE lo trata como upsert y actualiza la entrada existente.
+      if (order.status === 'CANCELED') {
+        await syncWorklist(() => mwlOutbox.enqueueDelete(order), `updateOrder ${order.accessionNumber}`);
+      } else {
+        await syncWorklist(
+          () => mwlOutbox.enqueueUpsert(order._id, 'UPDATE'),
+          `updateOrder ${order.accessionNumber}`
+        );
+      }
+
+      res.json(await RisOrder.findById(id));
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
@@ -104,6 +140,11 @@ const risController = {
       const { id } = req.params;
       const order = await RisOrder.findByIdAndDelete(id);
       if (!order) return res.status(404).json({ error: 'Orden no encontrada' });
+
+      // La orden ya no existe en el RIS: hay que retirarla de la worklist o el
+      // equipo seguiría ofreciendo un estudio que nadie va a hacer.
+      await syncWorklist(() => mwlOutbox.enqueueDelete(order), `deleteOrder ${order.accessionNumber}`);
+
       res.json({ message: 'Orden eliminada correctamente' });
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -115,7 +156,20 @@ const risController = {
       const { status } = req.body;
       const order = await RisOrder.findByIdAndUpdate(id, { status }, { new: true });
       if (!order) return res.status(404).json({ error: 'Orden no encontrada' });
-      res.json(order);
+
+      // CANCELED retira la entrada; volver a SCHEDULED la repone. IN_PROGRESS y
+      // COMPLETED no tocan la worklist: ese estado lo reporta el propio equipo
+      // por MPPS (etapa 2 del documento).
+      if (status === 'CANCELED') {
+        await syncWorklist(() => mwlOutbox.enqueueDelete(order), `cancel ${order.accessionNumber}`);
+      } else if (status === 'SCHEDULED') {
+        await syncWorklist(
+          () => mwlOutbox.enqueueUpsert(order._id, 'UPDATE'),
+          `reschedule ${order.accessionNumber}`
+        );
+      }
+
+      res.json(await RisOrder.findById(id));
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
