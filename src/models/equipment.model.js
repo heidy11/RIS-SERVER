@@ -24,6 +24,26 @@ const equipmentSchema = new mongoose.Schema(
       type: Boolean,
       default: true, // Activo/Inactivo
     },
+aeTitle: {
+      type: String,
+      trim: true,
+      uppercase: true,
+      maxlength: 16,
+      index: true,
+    },
+ipAddress:  { type: String, trim: true },
+    dicomPort:  { type: Number, default: 104 },
+
+    modality: {
+      type: String,
+      trim: true,
+      uppercase: true,
+      index: true,
+    },
+
+    supportsMwl: { type: Boolean, default: true },
+
+    conformanceNotes: { type: String, default: '' },
 
     // ── Preventive Maintenance fields ──────────────────────────────
     lastMaintenanceDate: { type: Date },

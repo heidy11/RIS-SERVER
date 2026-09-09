@@ -24,16 +24,12 @@ const slotRoutes = require('./slot.routes.js');            // Gestión de slots 
 const settingsRoutes = require('./settings.routes.js');    // Configuración general del sistema
 const whatsappRoutes = require('./whatsapp.route.js');     // Integración con WhatsApp (notificaciones/mensajes)
 const risRoutes = require('./ris.route.js');               // RIS (Radiology Information System)
-
-// ──────────────────────────────────────────────
-// Registro de rutas en el router principal
-// Todas estas rutas quedan bajo el prefijo /api
-// cuando este router se monta en server.js
-// ──────────────────────────────────────────────
+const mwlRoutes = require('./mwl.route.js');                // RIS-PACS Adapter (Modality Worklist)
 
 router.use('/server', serverRoutes);           // GET /api/server      → Estado del servidor
 router.use('/dicom', dicomRoutes);             // *   /api/dicom       → Operaciones DICOM
 router.use('/ris', risRoutes);                 // *   /api/ris         → Sistema de información radiológica
+router.use('/mwl', mwlRoutes);                 // *   /api/mwl         → Worklist DICOM / sincronización con DCM4CHEE
 router.use('/auth', authRoutes);               // POST /api/auth       → Autenticación de usuarios
 router.use('/usuarios', userRoutes);           // *   /api/usuarios    → CRUD de usuarios
 router.use('/pacientes', patientRoutes);       // *   /api/pacientes   → CRUD de pacientes
@@ -49,9 +45,6 @@ router.use('/slots', slotRoutes);              // *   /api/slots       → Dispo
 router.use('/settings', settingsRoutes);       // *   /api/settings    → Configuración del sistema
 router.use('/whatsapp', whatsappRoutes);       // *   /api/whatsapp    → Mensajería WhatsApp
 
-// Ruta de generación de token montada en la raíz relativa de este router.
-// Como este router se monta en /api en server.js, la ruta resultante es:
-// POST /api/token
 router.use('/', tokenRoutes);
 
 module.exports = router;

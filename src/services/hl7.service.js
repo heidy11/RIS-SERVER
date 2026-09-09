@@ -165,8 +165,17 @@ class HL7Service {
     );
     console.log(`[HL7] Orden ${accessionNumber} procesada exitosamente (ORM).`);
 
-    // Reenviar a dcm4chee (Integración MWL)
+    // Desactivado por defecto: si el adapter tambien crea la entrada MWL, el
+    // equipo ve al paciente duplicado. Ver docs/mwl_adapter.md
     try {
+      if (process.env.HL7_FORWARD_TO_PACS !== 'true') {
+        console.log(
+          '[HL7] Reenvío a dcm4chee omitido (HL7_FORWARD_TO_PACS != true). ' +
+            'La worklist la genera el RIS-PACS Adapter.'
+        );
+        return;
+      }
+
       const dcm4cheeHost = process.env.DCM4CHEE_HL7_HOST || '127.0.0.1';
       const dcm4cheePort = parseInt(process.env.DCM4CHEE_HL7_PORT || '2575');
 

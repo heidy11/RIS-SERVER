@@ -70,6 +70,25 @@ const risOrderSchema = new mongoose.Schema(
     },
     paymentNotes: { type: String },
     paidAt:        { type: Date },
+studyInstanceUid: { type: String, index: true, sparse: true, unique: true },
+equipment: { type: mongoose.Schema.Types.ObjectId, ref: 'Equipment' },
+
+    stationAet: { type: String },
+
+    requestedProcedureId:       { type: String },
+    scheduledProcedureStepId:   { type: String },
+
+    // Estado de sincronización con la worklist de DCM4CHEE.
+    mwlSyncStatus: {
+      type: String,
+      enum: ['PENDING', 'SYNCED', 'ERROR', 'DISABLED'],
+      default: 'PENDING',
+      index: true,
+    },
+    mwlSyncedAt:  { type: Date },
+    mwlLastError: { type: String },
+mppsStatus:    { type: String },
+    mppsUpdatedAt: { type: Date },
 
     // ── Teaching File / Docencia ───────────────────────────────────
     isTeachingFile:   { type: Boolean, default: false },

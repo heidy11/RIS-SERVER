@@ -1,0 +1,55 @@
+
+services:
+  ldap:
+    image: dcm4che/slapd-dcm4chee:2.6.13-35.1
+    container_name: pacs-lab-ldap
+    restart: unless-stopped
+    ports:
+      - "389:389"
+    environment:
+      STORAGE_DIR: /storage/fs1
+    volumes:
+      - ldap_data:/var/lib/openldap/openldap-data
+      - ldap_config:/etc/openldap/slapd.d
+
+  db:
+    image: dcm4che/postgres-dcm4chee:17.9-35
+    container_name: pacs-lab-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: pacsdb
+      POSTGRES_USER: pacs
+      POSTGRES_PASSWORD: pacs
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  arc:
+    image: dcm4che/dcm4chee-arc-psql:5.35.1
+    container_name: pacs-lab-arc
+    restart: unless-stopped
+    ports:
+      - "8080:8080"   
+      - "9990:9990"    
+      - "11112:11112"  
+      - "2575:2575"    
+    environment:
+      POSTGRES_DB: pacsdb
+      POSTGRES_USER: pacs
+      POSTGRES_PASSWORD: pacs
+      WILDFLY_WAIT_FOR: "ldap:389 db:5432"
+      TZ: America/La_Paz
+    depends_on:
+      - ldap
+      - db
+    volumes:
+      - arc_storage:/storage
+      - arc_wildfly:/opt/wildfly/standalone
+
+volumes:
+  ldap_data:
+  ldap_config:
+  db_data:
+  arc_storage:
+  arc_wildfly:
