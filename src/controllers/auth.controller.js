@@ -4,7 +4,6 @@ const responseHandler = require('../utils/responseHandler.js');
 // Registrar un usuario
 exports.register = async (req, res) => {
   try {
-    console.log(req.body);
     const newUser = await AuthService.register(req.body);
     responseHandler.success(res, 201, { user: newUser }, 'Usuario registrado exitosamente');
   } catch (error) {
@@ -20,7 +19,6 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { correo, contrasena } = req.body;
-    console.log(correo, contrasena);
     const result = await AuthService.login(correo, contrasena);
 
     responseHandler.success(res, 200, result, 'Login exitoso');

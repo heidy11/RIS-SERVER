@@ -20,9 +20,9 @@ Crea un archivo `.env` en la raíz del directorio `/server` tomando como referen
 | Variable | Valor por Defecto | Descripción |
 | :--- | :--- | :--- |
 | `MONGO_URI` | `mongodb://localhost:27017/ohif-db` | Cadena de conexión a MongoDB. *(Es sobrescrita automáticamente a `mongodb://mongodb-server:27017/ohif-db` cuando se ejecuta en Docker Compose)* |
-| `JWT_SECRET` | `clave-secreta-supersegura` | Semilla criptográfica utilizada para firmar y verificar tokens JWT. |
-| `ADMIN_EMAIL` | `Administrador@gmail.com` | Correo del administrador inicial autogenerado durante el primer arranque. |
-| `ADMIN_PASSWORD` | `1234Qwer` | Contraseña del administrador inicial. |
+| `JWT_SECRET` | *(sin valor por defecto seguro — debes definir una clave propia, larga y aleatoria)* | Semilla criptográfica utilizada para firmar y verificar tokens JWT. **No dejar el valor de ejemplo del `.env.example` en ningún entorno real.** |
+| `ADMIN_EMAIL` | *(defínelo tú)* | Correo del administrador inicial autogenerado durante el primer arranque. |
+| `ADMIN_PASSWORD` | *(defínelo tú)* | Contraseña del administrador inicial. **Cambiar el valor de ejemplo antes de desplegar** — si quedó con el valor por defecto en algún ambiente, hay que rotarla ya. |
 | `AUTO_ENVIO` | `false` | Activa (`true`) el servicio en segundo plano de sincronización robusta DICOM hacia el PACS externo. |
 | `SYNC_INTERVAL` | `300000` (5 min) | Tiempo de espera en milisegundos entre cada ciclo de sincronización automática. |
 | `AUTO_LOGIN` | `false` | Activa (`true`) el script periódico de Puppeteer para auto-loguearse en portales externos. |
