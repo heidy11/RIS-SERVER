@@ -7,7 +7,6 @@ const JWT_SECRET = process.env.JWT_SECRET || 'clave-secreta-supersegura';
 class AuthService {
   async register(data) {
     const { nombre, correo, contraseña, role, vistas } = data;
-    console.log(data);
     const existingUser = await User.findOne({ correo });
     if (existingUser) {
       throw new Error('El correo ya está registrado.');
@@ -27,7 +26,6 @@ class AuthService {
   }
 
   async login(correo, contrasena) {
-    console.log(correo, contrasena);
     const startDb = Date.now();
     const user = await User.findOne({ correo });
     console.log(`[Auth Performance] DB Find User: ${Date.now() - startDb}ms`);
