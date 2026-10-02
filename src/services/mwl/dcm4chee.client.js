@@ -108,13 +108,39 @@ async function requestWithAuth(options) {
  * @param {object} patientDataset DICOM JSON con los tags del grupo 0010
  */
 async function createOrUpdatePatient(patientDataset) {
-  const res = await requestWithAuth({
-    method: 'POST',
-    url: `${config.rsBase}/patients`,
-    data: patientDataset,
-    headers: { 'Content-Type': 'application/dicom+json' },
-  });
-  return { status: res.status, data: res.data };
+  try {
+    const res = await requestWithAuth({
+      method: 'POST',
+      url: `${config.rsBase}/patients`,
+      data: patientDataset,
+      headers: { 'Content-Type': 'application/dicom+json' },
+    });
+    return { status: res.status, data: res.data };
+  } catch (err) {
+    // Algunas versiones de DCM4CHEE (verificado contra 5.12.x) rechazan el alta
+    // por POST cuando el Patient ID viaja en el cuerpo ("Patient ID in message
+    // body") y piden PUT con el ID en la URL en su lugar. Se reintenta solo en
+    // ese caso puntual; la version nueva (5.35.x) sigue usando el POST de arriba.
+    const rechazaIdEnCuerpo =
+      err instanceof Dcm4cheeError &&
+      err.status === 400 &&
+      /patient id/i.test(JSON.stringify(err.body || ''));
+    if (!rechazaIdEnCuerpo) throw err;
+
+    const patientId =
+      patientDataset['00100020'] &&
+      patientDataset['00100020'].Value &&
+      patientDataset['00100020'].Value[0];
+    if (!patientId) throw err;
+
+    const res = await requestWithAuth({
+      method: 'PUT',
+      url: `${config.rsBase}/patients/${encodeURIComponent(patientId)}`,
+      data: patientDataset,
+      headers: { 'Content-Type': 'application/dicom+json' },
+    });
+    return { status: res.status, data: res.data };
+  }
 }
 
 /**
