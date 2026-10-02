@@ -25,6 +25,15 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
+  # Docker crea el volumen de imágenes como root, pero DCM4CHEE escribe con el usuario
+  # wildfly (uid 1023): sin esto, guardar imágenes falla con AccessDeniedException.
+  arc-storage-init:
+    image: busybox:1.36
+    container_name: pacs-lab-storage-init
+    command: ["sh", "-c", "mkdir -p /storage/fs1 && chown -R 1023:1023 /storage"]
+    volumes:
+      - arc_storage:/storage
+
   arc:
     image: dcm4che/dcm4chee-arc-psql:5.35.1
     container_name: pacs-lab-arc
@@ -41,8 +50,12 @@ services:
       WILDFLY_WAIT_FOR: "ldap:389 db:5432"
       TZ: America/La_Paz
     depends_on:
-      - ldap
-      - db
+      ldap:
+        condition: service_started
+      db:
+        condition: service_started
+      arc-storage-init:
+        condition: service_completed_successfully
     volumes:
       - arc_storage:/storage
       - arc_wildfly:/opt/wildfly/standalone

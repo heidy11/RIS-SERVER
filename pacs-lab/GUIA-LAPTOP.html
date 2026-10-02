@@ -350,7 +350,10 @@ npm install</pre></div>
   </ol>
   <div class="code"><pre>cd D:\RIS-NUESTRO\RIS-SERVER
 .\pacs-lab\scripts\simular-tomografo.ps1</pre></div>
-  <p>El simulador consulta la worklist por DICOM, igual que el equipo real, y muestra el paciente, el número de orden y el horario. Otras modalidades o equipos, y la salida completa para diagnosticar:</p>
+  <p>El simulador consulta la worklist por DICOM, igual que el equipo real, y muestra el paciente, el número de orden y el horario.</p>
+  <p>Para simular también el final del estudio (el equipo guardando las imágenes en el PACS), con el número de orden que muestra el simulador:</p>
+  <div class="code"><pre>node pacs-lab/scripts/mwl.js estudio NUMERO_DE_ORDEN</pre></div>
+  <p>Guarda una imagen de tomografía sintética (no es de ningún paciente real, dice "SIMULACION RIS - NO DIAGNOSTICO") con los mismos datos de la cita, y muestra el link para abrirla en el visor. Otras modalidades o equipos, y la salida completa para diagnosticar:</p>
   <div class="code"><pre>.\pacs-lab\scripts\simular-tomografo.ps1 -Modalidad US -AeEquipo US01
 .\pacs-lab\scripts\simular-tomografo.ps1 -Completo</pre></div>
 
@@ -412,6 +415,7 @@ npm install</pre></div>
     <tr><td>El Echo/Verify del tomógrafo falla</td><td>IP mal escrita, la laptop está en otra red o subred, o el firewall.</td><td>Revisar la IP con <code>ipconfig</code>, que ambos estén en la misma red, y el puerto 11112 en el firewall. Desde la laptop: <code>ping &lt;IP del tomógrafo&gt;</code>.</td></tr>
     <tr><td>El Echo da OK pero la worklist del equipo está vacía</td><td>La cita no es de hoy, la modalidad no coincide, o el equipo solo muestra las citas de su propio AE Title.</td><td>Registrar el tomógrafo en Equipos con su AE Title exacto y agendar una cita nueva.</td></tr>
     <tr><td>El simulador ve la cita pero el tomógrafo no</td><td>Filtros en la pantalla de worklist del equipo.</td><td>Revisar en el equipo los filtros de fecha, modalidad y "solo mi estación".</td></tr>
+    <tr><td>El equipo envía las imágenes pero no quedan en el PACS (o <code>mwl.js estudio</code> da HTTP 409)</td><td>La carpeta de imágenes del PACS quedó sin permisos de escritura (en el log: <code>AccessDeniedException: /storage/fs1</code>). Pasaba con versiones anteriores del laboratorio.</td><td>Actualizar y volver a levantar el PACS: <code>git pull</code> y después <code>npm run pacs-lab:up</code> (corrige los permisos solo).</td></tr>
   </table></div>
 </section>
 

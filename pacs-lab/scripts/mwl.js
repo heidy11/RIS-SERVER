@@ -200,6 +200,46 @@ async function cmdDelete(studyUid, spsId) {
   console.log(`  OK  ${res.status}  borrado ${spsId}`);
 }
 
+/** Simula al equipo: guarda en el PACS una imagen sintética con los datos de una entrada de worklist. */
+async function cmdEstudio(accession) {
+  const qs = new URLSearchParams({ AccessionNumber: accession, includefield: 'all' });
+  const res = await request('GET', `${MWL}/mwlitems?${qs}`);
+  if (!res.ok) fail(`HTTP ${res.status} al buscar la orden en la worklist\n  ${res.text.slice(0, 400)}`);
+  const it = res.status === 204 || !res.json ? null : res.json[0];
+  if (!it) fail(`No hay ninguna entrada en la worklist con el número de orden ${accession}.`);
+
+  const datos = {
+    pacienteNombre: tag(it, '00100010'),
+    pacienteId: tag(it, '00100020'),
+    accession,
+    studyInstanceUid: tag(it, '0020000D'),
+    descripcion: spsTag(it, '00400007'),
+    modalidad: spsTag(it, '00080060') || 'CT',
+  };
+  if (!datos.studyInstanceUid) fail('La entrada de worklist no tiene StudyInstanceUID.');
+
+  const { crearInstancia } = require('./estudio-sintetico');
+  const { archivo } = crearInstancia(datos);
+  const boundary = `RIS${Date.now()}`;
+  const body = Buffer.concat([
+    Buffer.from(`--${boundary}\r\nContent-Type: application/dicom\r\n\r\n`),
+    archivo,
+    Buffer.from(`\r\n--${boundary}--\r\n`),
+  ]);
+  const stow = await request(
+    'POST',
+    `${RS}/studies`,
+    body,
+    `multipart/related; type="application/dicom"; boundary=${boundary}`
+  );
+  if (!stow.ok) fail(`HTTP ${stow.status} al guardar la imagen en el PACS\n  ${stow.text.slice(0, 600)}`);
+
+  const visor = (process.env.VIEWER_URL || 'https://medviewer.corea.signa-engineering.com').replace(/\/+$/, '');
+  console.log(`  OK  ${stow.status}  Imagen sintetica guardada en el PACS para ${datos.pacienteNombre} (orden ${accession})`);
+  console.log(`  StudyInstanceUID  ${datos.studyInstanceUid}`);
+  console.log(`  Abrir en el visor:  ${visor}/viewer?StudyInstanceUIDs=${datos.studyInstanceUid}`);
+}
+
 async function cmdSeed() {
   console.log(`Creando entradas de prueba con fecha ${todayDA()} en ${RS}\n`);
   for (const f of TEST_FILES) {
@@ -252,6 +292,9 @@ async function main() {
       return cmdDelete(rest[0], rest[1]);
     case 'purge':
       return cmdPurge();
+    case 'estudio':
+      if (!rest[0]) fail('Falta el numero de orden.  Uso: mwl.js estudio <accessionNumber>');
+      return cmdEstudio(rest[0]);
     default:
       console.log(fs.readFileSync(__filename, 'utf8').split('*/')[0].replace(/^\/\*\*?/, ''));
       process.exit(cmd ? 1 : 0);
