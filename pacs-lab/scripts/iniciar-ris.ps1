@@ -55,6 +55,8 @@ if (-not $pacsListo) {
 Write-Host 'PACS listo.' -ForegroundColor Green
 
 # 3. Backend y frontend, cada uno en su propia ventana (si ya estaban corriendo, no se duplican).
+# El frontend se compila en modo "lan" y se sirve ya compilado, accesible desde otras
+# PCs de la red. No se usa el servidor de desarrollo: no es seguro abrirlo a la red.
 if (Puerto-Ocupado 5000) {
   Write-Host 'El backend ya estaba corriendo.'
 } else {
@@ -63,10 +65,22 @@ if (Puerto-Ocupado 5000) {
 if (Puerto-Ocupado 5173) {
   Write-Host 'El frontend ya estaba corriendo.'
 } else {
-  Start-Process powershell -ArgumentList '-NoExit', '-Command', "Set-Location '$frontendPath'; npm run dev"
-  Start-Sleep -Seconds 8
+  Start-Process powershell -ArgumentList '-NoExit', '-Command', "Set-Location '$frontendPath'; npm run build -- --mode lan; npm run preview -- --host --port 5173 --strictPort"
+  Write-Host 'Compilando el frontend (la primera vez tarda alrededor de un minuto)...'
+  for ($i = 0; $i -lt 60 -and -not (Puerto-Ocupado 5173); $i++) { Start-Sleep -Seconds 3 }
 }
 Start-Process 'http://localhost:5173'
+
+# Sin estas reglas el tomografo y las otras PCs no llegan a la laptop.
+foreach ($puerto in 11112, 5173, 5000) {
+  $regla = Get-NetFirewallPortFilter -Protocol TCP -ErrorAction SilentlyContinue |
+    Where-Object { $_.LocalPort -eq "$puerto" } |
+    Get-NetFirewallRule -ErrorAction SilentlyContinue |
+    Where-Object { $_.Enabled -eq 'True' -and $_.Direction -eq 'Inbound' -and $_.Action -eq 'Allow' }
+  if (-not $regla) {
+    Write-Host "Aviso: el puerto $puerto no esta abierto en el firewall de Windows." -ForegroundColor Yellow
+  }
+}
 
 # 4. Datos para configurar el tomografo.
 Write-Host ''
@@ -74,6 +88,9 @@ Write-Host '=== Datos para el tecnico del tomografo ===' -ForegroundColor Cyan
 Write-Host 'AE Title del servidor de worklist : WORKLIST'
 Write-Host 'Puerto                            : 11112'
 Write-Host 'IP de esta laptop (usar la de la red a la que esta conectado el tomografo):'
-Get-NetIPAddress -AddressFamily IPv4 |
-  Where-Object { $_.IPAddress -notlike '127.*' -and $_.IPAddress -notlike '169.254.*' -and $_.InterfaceAlias -notlike 'vEthernet*' } |
-  ForEach-Object { Write-Host ("   {0,-15}  ({1})" -f $_.IPAddress, $_.InterfaceAlias) }
+$ips = Get-NetIPAddress -AddressFamily IPv4 |
+  Where-Object { $_.IPAddress -notlike '127.*' -and $_.IPAddress -notlike '169.254.*' -and $_.InterfaceAlias -notlike 'vEthernet*' }
+$ips | ForEach-Object { Write-Host ("   {0,-15}  ({1})" -f $_.IPAddress, $_.InterfaceAlias) }
+Write-Host ''
+Write-Host 'Para entrar al RIS desde otra PC de la misma red, abrir en el navegador:' -ForegroundColor Cyan
+$ips | ForEach-Object { Write-Host ("   http://{0}:5173" -f $_.IPAddress) }

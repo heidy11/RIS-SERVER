@@ -16,6 +16,27 @@ en `http://localhost:5173`. Al final muestra los datos para el técnico del
 equipo, incluida la IP de la laptop. Las dos ventanas nuevas que se abren
 (backend y frontend) tienen que quedar abiertas.
 
+### Una sola vez: abrir los puertos en el firewall
+
+En PowerShell **como administrador** (clic derecho → Ejecutar como administrador).
+Si `iniciar-ris.ps1` muestra un aviso de puerto no abierto, es esto lo que falta:
+
+```powershell
+New-NetFirewallRule -DisplayName "RIS-PACS DICOM" -Direction Inbound -Protocol TCP -LocalPort 11112 -Action Allow
+New-NetFirewallRule -DisplayName "RIS web" -Direction Inbound -Protocol TCP -LocalPort 5173 -Action Allow
+New-NetFirewallRule -DisplayName "RIS backend" -Direction Inbound -Protocol TCP -LocalPort 5000 -Action Allow
+```
+
+El 11112 es el que usa el tomógrafo; el 5173 y el 5000, para entrar al RIS desde
+otra PC. Que el `ping` a la laptop no responda es normal: Windows lo bloquea por
+defecto y el equipo no lo necesita. Para probar la conexión desde otra PC se usa
+`Test-NetConnection <IP de la laptop> -Port 11112`.
+
+### Entrar al RIS desde otra PC de la red
+
+En el navegador de la otra PC: `http://<IP de la laptop>:5173` (por ejemplo
+`http://192.168.1.14:5173`). `iniciar-ris.ps1` muestra la dirección exacta al final.
+
 ## 2. Conectar la laptop a la red del tomógrafo
 
 Conectarla por cable o wifi a la misma red del equipo y volver a correr
