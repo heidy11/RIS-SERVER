@@ -10,7 +10,8 @@
     "test": "node --test \"test/**/*.test.js\"",
     "pacs-lab:up": "docker compose -f pacs-lab/docker-compose.yml up -d",
     "pacs-lab:down": "docker compose -f pacs-lab/docker-compose.yml down",
-    "mwl": "node pacs-lab/scripts/mwl.js"
+    "mwl": "node pacs-lab/scripts/mwl.js",
+    "reset-admin": "node scripts/reset-admin.js"
   },
   "dependencies": {
     "@turbodocx/html-to-docx": "^1.13.4",

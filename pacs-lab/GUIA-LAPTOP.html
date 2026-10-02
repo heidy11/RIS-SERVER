@@ -172,7 +172,8 @@ node pacs-lab/scripts/mwl.js seed</pre></div>
     <tr><th>Qué pasa</th><th>Qué hacer</th></tr>
     <tr><td>El script dice que Docker no arrancó</td><td>Abrir Docker Desktop desde el menú Inicio, esperar a que la ballena deje de moverse y volver a correr el script.</td></tr>
     <tr><td>El script avisa "puerto no abierto en el firewall"</td><td>PowerShell como administrador y los comandos del <a href="#paso8">paso 8</a>.</td></tr>
-    <tr><td>No puedo entrar al RIS</td><td>Revisar que la ventana del backend siga abierta. Si no, volver a correr el script.</td></tr>
+    <tr><td>El login dice "Credenciales inválidas"</td><td>En PowerShell, en <code>D:\RIS-NUESTRO\RIS-SERVER</code>: <code>npm run reset-admin</code> (pone la contraseña del <code>.env</code>). El correo distingue mayúsculas.</td></tr>
+    <tr><td>El login dice "Error al iniciar sesión"</td><td>Revisar que la ventana del backend siga abierta. Si no, volver a correr el script.</td></tr>
     <tr><td>El Echo del tomógrafo falla</td><td>Misma red y subred que la laptop, IP bien escrita. Desde la laptop: <code>ping &lt;IP del tomógrafo&gt;</code></td></tr>
     <tr><td>Echo OK pero la worklist del equipo está vacía</td><td>Cita de hoy, modalidad CT, y tomógrafo registrado en Equipos con su AE exacto (agendar una cita nueva después de registrarlo).</td></tr>
     <tr><td>El simulador muestra la cita pero el equipo no</td><td>Revisar los filtros de la worklist en el equipo: fecha, modalidad, "solo mi estación".</td></tr>
@@ -291,7 +292,7 @@ New-NetFirewallRule -DisplayName "RIS backend" -Direction Inbound -Protocol TCP 
   <h3>Paso 9 — Primer arranque</h3>
   <div class="code"><pre>cd D:\RIS-NUESTRO\RIS-SERVER
 .\pacs-lab\scripts\iniciar-ris.ps1</pre></div>
-  <p>Se abre el navegador en el RIS. Entrar con el correo y la contraseña del paso 5. Si entra, la instalación está completa.</p>
+  <p>Se abre el navegador en el RIS. Entrar con el correo y la contraseña del paso 5. Si entra, la instalación está completa. <b>Siempre verificar el login antes de dar la instalación por terminada.</b> Si dice "Credenciales inválidas", correr <code>npm run reset-admin</code> (ver troubleshooting).</p>
 </section>
 
 <!-- ───────────── 4 ───────────── -->
@@ -396,7 +397,8 @@ npm install</pre></div>
   <div class="tbl"><table>
     <tr><th>Síntoma</th><th>Causa</th><th>Solución</th></tr>
     <tr><td>No se puede iniciar sesión o la pantalla de login no responde</td><td>La ventana del backend está cerrada, o el backend no conectó a la base de datos.</td><td>Volver a correr <code>iniciar-ris.ps1</code>. Si sigue, en la ventana del backend buscar "MongoDB Conectado"; si no aparece: <code>docker start ris-mongo</code>.</td></tr>
-    <tr><td>El usuario o la contraseña no funcionan</td><td>El administrador se crea con los datos del <code>.env</code> la primera vez que arranca el backend.</td><td>Revisar <code>ADMIN_EMAIL</code> y <code>ADMIN_PASSWORD</code> en <code>RIS-SERVER\.env</code> (distinguen mayúsculas).</td></tr>
+    <tr><td>El login dice "Credenciales inválidas" con el usuario del <code>.env</code></td><td>El administrador se crea <b>una sola vez</b>, en el primer arranque: si después se cambió la contraseña en el <code>.env</code>, no se actualiza. También pasa si el correo no coincide en mayúsculas y minúsculas (<code>Administrador@…</code> no es <code>administrador@…</code>).</td><td>En <code>D:\RIS-NUESTRO\RIS-SERVER</code>: <code>npm run reset-admin</code>. Pone la contraseña del <code>.env</code>; si el correo no existe, muestra los administradores registrados para ver la diferencia.</td></tr>
+    <tr><td>El login dice "Error al iniciar sesión"</td><td>El navegador no llega al backend: la ventana del backend está cerrada o, desde otra PC, faltan los puertos del firewall.</td><td>Volver a correr <code>iniciar-ris.ps1</code> y revisar el <a href="#paso8">paso 8</a>.</td></tr>
     <tr><td>"Puerto en uso" o el sistema aparece dos veces</td><td>Ya había una ventana del backend o del frontend abierta.</td><td>Cerrar las ventanas viejas antes de volver a arrancar. El script detecta si ya están corriendo y no las duplica.</td></tr>
     <tr><td>Desde otra PC no carga <code>http://&lt;IP&gt;:5173</code></td><td>Faltan los puertos 5173/5000 en el firewall, el frontend se arrancó en modo desarrollo, o la red Wi-Fi aísla a los dispositivos.</td><td>Abrir los puertos (<a href="#paso8">paso 8</a>), arrancar con <code>iniciar-ris.ps1</code>, y si sigue probar con cable (las redes de invitados suelen aislar los dispositivos).</td></tr>
     <tr><td>El ping a la laptop no responde</td><td>Windows bloquea el ping por defecto. No es un problema: el tomógrafo no lo usa.</td><td>Probar el puerto real desde la otra PC: <code>Test-NetConnection &lt;IP de la laptop&gt; -Port 11112</code> (debe decir <code>TcpTestSucceeded : True</code>). O habilitar el ping (paso 8, opcional).</td></tr>

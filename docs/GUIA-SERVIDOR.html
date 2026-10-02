@@ -185,6 +185,7 @@ nano .env</pre></div>
   <div class="code"><pre>docker compose up -d --build
 docker compose logs -f backend-server</pre></div>
   <p>En los logs tienen que aparecer <code>MongoDB Conectado...</code> y <code>[MWL] Adapter activo</code>. Salir de los logs con Ctrl+C (el backend sigue corriendo).</p>
+  <p>Si se cambia <code>ADMIN_PASSWORD</code> después del primer arranque, aplicarlo con <code>docker compose exec backend-server node scripts/reset-admin.js</code>: el backend no actualiza la contraseña solo.</p>
 </section>
 
 <section id="frontend">
@@ -292,10 +293,19 @@ docker compose up -d --build ris-prod</pre></div>
     <tr><td><code>git pull</code> falla por cambios locales</td><td>Ajustes propios del servidor en archivos del repo.</td><td><code>git pull --autostash</code> (sección 9).</td></tr>
   </table></div>
 
+  <h3>Acceso al sistema</h3>
+  <div class="tbl"><table>
+    <tr><th>Síntoma</th><th>Causa</th><th>Solución</th></tr>
+    <tr><td>El login dice "Credenciales inválidas" con el usuario del <code>.env</code></td><td>El administrador se crea <b>una sola vez</b>, en el primer arranque: si después se cambió la contraseña en el <code>.env</code>, no se actualiza. También pasa si el correo no coincide en mayúsculas y minúsculas.</td><td><code>docker compose exec backend-server node scripts/reset-admin.js</code> (o <code>npm run reset-admin</code> si el backend corre sin Docker). Pone la contraseña del <code>.env</code>; si el correo no existe, lista los administradores registrados.</td></tr>
+    <tr><td>El login dice "Error al iniciar sesión"</td><td>El navegador no llega al backend: contenedor caído, dominio del backend mal configurado o <code>VITE_API_URL</code> equivocado.</td><td><code>docker ps</code> para ver si el backend corre; probar <code>curl https://&lt;dominio del backend&gt;/api/settings</code> (debe dar 200); revisar <code>VITE_API_URL</code> (sección 4).</td></tr>
+    <tr><td>La pantalla de login no muestra el logo ni el nombre de la institución</td><td>El frontend no logra leer la configuración del backend (mismo motivo que el anterior).</td><td>Igual que la fila anterior.</td></tr>
+  </table></div>
+
   <h3>Dominio y certificados</h3>
   <div class="tbl"><table>
     <tr><th>Síntoma</th><th>Causa</th><th>Solución</th></tr>
     <tr><td><code>ERR_CERT_DATE_INVALID</code></td><td>Certificado vencido.</td><td>Ver la fecha: <code>echo | openssl s_client -connect &lt;dominio&gt;:443 -servername &lt;dominio&gt; 2&gt;/dev/null | openssl x509 -noout -dates</code>. Renovar: <code>sudo certbot renew</code>.</td></tr>
+    <tr><td>El visor (MED Viewer) abre pero no muestra ningún estudio</td><td>El visor lee el PACS por <code>https://corea.signa-engineering.com/dcm4chee-arc/...</code> (configurado en su <code>app-config.js</code>); si el certificado de ese dominio vence, el navegador bloquea todas las consultas.</td><td>Revisar la fecha del certificado de <code>corea.signa-engineering.com</code> (fila anterior) y renovarlo con <code>sudo certbot renew</code>. Al 1 de octubre de 2026 está vencido desde el 6 de septiembre.</td></tr>
     <tr><td>"&lt;usuario&gt; is not in the sudoers file"</td><td>El usuario no tiene permisos de administrador.</td><td>Pedírselo a quien administra el servidor, o restablecer la contraseña de root desde el panel de Contabo si la cuenta es propia.</td></tr>
     <tr><td>El dominio no resuelve</td><td>Falta el registro DNS.</td><td><code>nslookup &lt;dominio&gt;</code>. Si no devuelve la IP del servidor, pedir el registro A a quien administra el DNS.</td></tr>
   </table></div>
@@ -315,6 +325,7 @@ docker compose up -d --build ris-prod</pre></div>
   <ul>
     <li>El backend muestra <code>MongoDB Conectado...</code> y <code>[MWL] Adapter activo</code>.</li>
     <li>El frontend corre como <code>ris-prod</code>, nunca <code>ris-dev</code>.</li>
+    <li><b>Login probado</b> con el usuario del <code>.env</code> desde la dirección pública. Si falla con "Credenciales inválidas": <code>reset-admin</code> (sección 10).</li>
     <li><code>.env</code> con valores propios: ni <code>JWT_SECRET</code> ni contraseñas de ejemplo.</li>
     <li>AE Titles del PACS verificados con <code>/aets</code> y con la prueba de <code>/rs/mwlitems</code>.</li>
     <li>En <code>docker ps</code>, ninguna base de datos ni consola de administración en <code>0.0.0.0</code>.</li>

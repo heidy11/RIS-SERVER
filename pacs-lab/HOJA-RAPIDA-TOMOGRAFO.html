@@ -158,7 +158,8 @@ node pacs-lab/scripts/mwl.js seed</pre></div>
     <tr><th>Qué pasa</th><th>Qué hacer</th></tr>
     <tr><td>El script dice que Docker no arrancó</td><td>Abrir Docker Desktop desde el menú Inicio, esperar a que la ballena deje de moverse y volver a correr el script.</td></tr>
     <tr><td>El script avisa "puerto no abierto en el firewall"</td><td>PowerShell como administrador y los comandos del paso 8 de la guía completa (GUIA-LAPTOP.html).</td></tr>
-    <tr><td>No puedo entrar al RIS</td><td>Revisar que la ventana del backend siga abierta. Si no, volver a correr el script.</td></tr>
+    <tr><td>El login dice "Credenciales inválidas"</td><td>En PowerShell, en <code>D:\RIS-NUESTRO\RIS-SERVER</code>: <code>npm run reset-admin</code> (pone la contraseña del <code>.env</code>). El correo distingue mayúsculas.</td></tr>
+    <tr><td>El login dice "Error al iniciar sesión"</td><td>Revisar que la ventana del backend siga abierta. Si no, volver a correr el script.</td></tr>
     <tr><td>El Echo del tomógrafo falla</td><td>Misma red y subred que la laptop, IP bien escrita. Desde la laptop: <code>ping &lt;IP del tomógrafo&gt;</code></td></tr>
     <tr><td>Echo OK pero la worklist del equipo está vacía</td><td>Cita de hoy, modalidad CT, y tomógrafo registrado en Equipos con su AE exacto (agendar una cita nueva después de registrarlo).</td></tr>
     <tr><td>El simulador muestra la cita pero el equipo no</td><td>Revisar los filtros de la worklist en el equipo: fecha, modalidad, "solo mi estación".</td></tr>
