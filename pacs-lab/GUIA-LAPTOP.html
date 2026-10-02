@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guía RIS + PACS en laptop</title>
+<style>
+  /* layout: documento de una columna con índice fijo arriba; hoja rápida primero, guía completa después */
+  :root {
+    --bg: #f5f7f6;
+    --surface: #ffffff;
+    --border: #d9e1dd;
+    --fg: #17241e;
+    --muted: #5a6b63;
+    --accent: #146c48;
+    --accent-soft: #e3f3eb;
+    --code-bg: #f0f3f1;
+    --warn-bg: #fff4e2;
+    --warn-fg: #7a4b00;
+    --font: "Segoe UI", -apple-system, Roboto, Arial, sans-serif;
+    --mono: Consolas, "Cascadia Mono", "Courier New", monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1412; --surface: #161d1a; --border: #2b3631; --fg: #e9f0ec; --muted: #9aaba2;
+      --accent: #45c98c; --accent-soft: #163327; --code-bg: #0b0f0d; --warn-bg: #33270f; --warn-fg: #f2c879;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1412; --surface: #161d1a; --border: #2b3631; --fg: #e9f0ec; --muted: #9aaba2;
+    --accent: #45c98c; --accent-soft: #163327; --code-bg: #0b0f0d; --warn-bg: #33270f; --warn-fg: #f2c879;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.6 var(--font); }
+  .wrap { max-width: 860px; margin: 0 auto; padding-inline: 16px; padding-block: 0 64px; }
+  header.top { padding-block: 32px 8px; }
+  header.top h1 { font-size: clamp(24px, 4vw, 32px); margin: 0 0 4px; text-wrap: balance; }
+  header.top p { margin: 0; color: var(--muted); }
+  nav.toc {
+    position: sticky; top: 0; z-index: 5; background: var(--bg);
+    border-bottom: 1px solid var(--border); padding-block: 10px; margin-bottom: 8px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  nav.toc a {
+    font-size: 13px; text-decoration: none; color: var(--accent);
+    padding: 4px 10px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface);
+  }
+  nav.toc a:hover, nav.toc a:focus-visible { background: var(--accent-soft); outline: none; }
+  section { padding-top: 12px; }
+  h2 { font-size: 22px; margin: 36px 0 8px; padding-top: 8px; border-top: 2px solid var(--accent); text-wrap: balance; }
+  h3 { font-size: 17px; margin: 24px 0 6px; }
+  h4 { font-size: 15px; margin: 18px 0 4px; }
+  p, li { max-width: 72ch; }
+  ul, ol { padding-left: 22px; }
+  li { margin: 3px 0; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0; }
+  .quick { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 4px 20px 16px; }
+  .code {
+    position: relative; background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 8px; margin: 8px 0 14px; min-width: 0;
+  }
+  .code pre {
+    margin: 0; padding: 12px 14px; padding-right: 76px; overflow-x: auto;
+    font: 13.5px/1.55 var(--mono); white-space: pre;
+  }
+  .code button {
+    position: absolute; top: 8px; right: 8px; font: 12px var(--font);
+    background: var(--surface); color: var(--fg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 9px; cursor: pointer;
+  }
+  .code button:hover, .code button:focus-visible { border-color: var(--accent); outline: none; }
+  code { font-family: var(--mono); font-size: 13.5px; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+  .note { background: var(--warn-bg); color: var(--warn-fg); border-radius: 8px; padding: 10px 14px; margin: 10px 0 14px; }
+  .note b { color: inherit; }
+  .tbl { overflow-x: auto; margin: 8px 0 16px; border: 1px solid var(--border); border-radius: 8px; }
+  table { border-collapse: collapse; width: 100%; background: var(--surface); font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { background: var(--accent-soft); font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  td.m, th.m { font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+  .steps { counter-reset: paso; list-style: none; padding-left: 0; }
+  footer { margin-top: 48px; color: var(--muted); font-size: 13px; }
+  td code { overflow-wrap: anywhere; }
+  @media (max-width: 640px) {
+    .tbl { border: none; }
+    .tbl table, .tbl tbody, .tbl tr, .tbl td { display: block; width: 100%; }
+    .tbl tr:first-child { display: none; }
+    .tbl tr { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+    .tbl td { border-bottom: 1px solid var(--border); white-space: normal; }
+    .tbl td::before {
+      content: attr(data-label); display: block; font-family: var(--font);
+      font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
+    }
+  }
+  @media print {
+    nav.toc, .code button { display: none; }
+    body { background: #fff; color: #000; font-size: 11pt; }
+    .quick, .code, .tbl, table { background: #fff; }
+    h2 { break-before: page; }
+    .quick h2 { break-before: auto; }
+  }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <p class="eyebrow">Sistema RIS + PACS · versión del 1 de octubre de 2026</p>
+  <h1>Guía de la laptop: instalación, arranque y troubleshooting</h1>
+  <p>Todo lo necesario para usar la laptop en la prueba con el tomógrafo y para replicar la instalación en otra laptop o PC con Windows.</p>
+</header>
+
+<nav class="toc" aria-label="Índice">
+  <a href="#rapida">Hoja rápida</a>
+  <a href="#que-queda">Qué queda instalado</a>
+  <a href="#requisitos">Requisitos</a>
+  <a href="#instalacion">Instalación</a>
+  <a href="#arranque">Arranque diario</a>
+  <a href="#prueba">Prueba con el tomógrafo</a>
+  <a href="#troubleshooting">Troubleshooting</a>
+  <a href="#referencia">Referencia</a>
+</nav>
+
+<!-- ───────────── HOJA RÁPIDA ───────────── -->
+<section id="rapida" class="quick">
+  <h2>Hoja rápida: prueba con el tomógrafo</h2>
+  <p>Para tener a mano frente al equipo. Cada paso tiene más detalle más abajo.</p>
+
+  <h3>1. Arrancar (al llegar)</h3>
+  <div class="code"><pre>cd D:\RIS-NUESTRO\RIS-SERVER
+.\pacs-lab\scripts\iniciar-ris.ps1</pre></div>
+  <ul>
+    <li>Esperar a que abra el navegador con el RIS (la primera vez del día, cerca de un minuto).</li>
+    <li>No cerrar las dos ventanas que se abren (backend y frontend).</li>
+    <li>Conectar la laptop a la red del tomógrafo y volver a correr el script: al final muestra la IP en esa red.</li>
+  </ul>
+
+  <h3>2. Datos para el técnico del tomógrafo</h3>
+  <div class="tbl"><table>
+    <tr><th>Dato</th><th>Valor</th></tr>
+    <tr><td>AE Title del servidor de worklist</td><td class="m">WORKLIST</td></tr>
+    <tr><td>IP</td><td>La que muestra el script en la red del tomógrafo</td></tr>
+    <tr><td>Puerto</td><td class="m">11112</td></tr>
+  </table></div>
+  <p>Pedirle además el <b>AE Title propio del tomógrafo</b>, su IP y su puerto DICOM. Si el equipo tiene botón <i>Verify</i>, <i>Echo</i> o <i>Test</i>, probarlo: debe dar OK.</p>
+
+  <h3>3. Registrar el tomógrafo en el RIS</h3>
+  <ul>
+    <li><b>Equipos → + Nuevo</b>: modalidad <code>CT</code>, AE Title del tomógrafo (exacto, distingue mayúsculas), su IP y su puerto. Guardar.</li>
+    <li>Botón <b>Probar conexión</b> en la fila del equipo: debe responder.</li>
+  </ul>
+
+  <h3>4. La prueba</h3>
+  <ul>
+    <li><b>Pacientes</b> → crear un paciente. <b>Recepción</b> → cita <b>para hoy</b>, modalidad <code>CT</code>.</li>
+    <li>Simular primero desde la laptop (reemplazar por el AE real del tomógrafo):</li>
+  </ul>
+  <div class="code"><pre>.\pacs-lab\scripts\simular-tomografo.ps1 -AeEquipo AE_DEL_TOMOGRAFO</pre></div>
+  <ul>
+    <li>En el tomógrafo: abrir la worklist y actualizar (<i>Reload</i>, <i>Refresh</i> o <i>Query</i>). Debe aparecer el paciente.</li>
+  </ul>
+  <div class="note"><b>Ojo con la fecha:</b> los equipos solo muestran las citas de hoy. Las citas de prueba cargadas antes son de otro día; para recrearlas con la fecha de hoy:</div>
+  <div class="code"><pre>node pacs-lab/scripts/mwl.js purge
+node pacs-lab/scripts/mwl.js seed</pre></div>
+
+  <h3>5. Si algo falla</h3>
+  <div class="tbl"><table>
+    <tr><th>Qué pasa</th><th>Qué hacer</th></tr>
+    <tr><td>El script dice que Docker no arrancó</td><td>Abrir Docker Desktop desde el menú Inicio, esperar a que la ballena deje de moverse y volver a correr el script.</td></tr>
+    <tr><td>El script avisa "puerto no abierto en el firewall"</td><td>PowerShell como administrador y los comandos del <a href="#paso8">paso 8</a>.</td></tr>
+    <tr><td>No puedo entrar al RIS</td><td>Revisar que la ventana del backend siga abierta. Si no, volver a correr el script.</td></tr>
+    <tr><td>El Echo del tomógrafo falla</td><td>Misma red y subred que la laptop, IP bien escrita. Desde la laptop: <code>ping &lt;IP del tomógrafo&gt;</code></td></tr>
+    <tr><td>Echo OK pero la worklist del equipo está vacía</td><td>Cita de hoy, modalidad CT, y tomógrafo registrado en Equipos con su AE exacto (agendar una cita nueva después de registrarlo).</td></tr>
+    <tr><td>El simulador muestra la cita pero el equipo no</td><td>Revisar los filtros de la worklist en el equipo: fecha, modalidad, "solo mi estación".</td></tr>
+    <tr><td>El simulador no muestra nada</td><td>Correr <code>simular-tomografo.ps1 -Completo</code> y guardar la salida (foto o copia).</td></tr>
+    <tr><td>El ping a la laptop no responde</td><td>Es normal: Windows lo bloquea. Probar con <code>Test-NetConnection &lt;IP laptop&gt; -Port 11112</code></td></tr>
+  </table></div>
+  <p><b>Soporte remoto:</b> si algo no se resuelve, la laptop tiene AnyDesk y acceso a internet. Abrir AnyDesk y pasar el código para revisarlo en vivo.</p>
+</section>
+
+<!-- ───────────── 1 ───────────── -->
+<section id="que-queda">
+  <h2>1. Qué queda instalado</h2>
+  <p>Al terminar la instalación, la laptop funciona como un pequeño centro de imágenes completo, sin depender de internet ni de los servidores en la nube.</p>
+  <div class="tbl"><table>
+    <tr><th>Componente</th><th>Para qué sirve</th><th>Dónde corre</th></tr>
+    <tr><td>RIS (frontend)</td><td>El sistema que usa el personal: recepción, citas, órdenes, equipos.</td><td>Navegador: <code>http://localhost:5173</code></td></tr>
+    <tr><td>Backend</td><td>Guarda los datos y manda cada cita a la worklist del PACS.</td><td>Puerto 5000</td></tr>
+    <tr><td>MongoDB</td><td>Base de datos del RIS (pacientes, citas, usuarios).</td><td>Contenedor Docker <code>ris-mongo</code></td></tr>
+    <tr><td>PACS (DCM4CHEE)</td><td>Servidor DICOM: la worklist que consulta el tomógrafo.</td><td>Contenedores Docker <code>pacs-lab-*</code></td></tr>
+  </table></div>
+  <p>El flujo: se agenda una cita en el RIS → el backend la envía al PACS en segundos → el tomógrafo consulta la worklist del PACS y la cita aparece en su pantalla, con los datos del paciente ya cargados.</p>
+</section>
+
+<!-- ───────────── 2 ───────────── -->
+<section id="requisitos">
+  <h2>2. Requisitos</h2>
+  <ul>
+    <li>Windows 10 u 11, de 64 bits.</li>
+    <li>Unos 10 GB libres. Si el disco C: está justo, instalar el proyecto en otra partición (en la laptop de referencia se usó D:).</li>
+    <li>Internet durante la instalación, para descargar programas e imágenes de Docker. Para usar el sistema después, no hace falta.</li>
+    <li>Un usuario con permisos de administrador (solo para abrir los puertos del firewall).</li>
+    <li>Virtualización habilitada en la BIOS (Docker la necesita; en casi todas las laptops modernas ya viene habilitada).</li>
+  </ul>
+</section>
+
+<!-- ───────────── 3 ───────────── -->
+<section id="instalacion">
+  <h2>3. Instalación paso a paso</h2>
+  <p>Todos los comandos van en PowerShell (menú Inicio → escribir "PowerShell"). Se indica cuándo hace falta abrirla como administrador.</p>
+
+  <h3>Paso 1 — Docker Desktop</h3>
+  <ul>
+    <li>Descargar desde <code>https://www.docker.com/products/docker-desktop/</code> e instalar con las opciones por defecto (dejar marcado "WSL 2").</li>
+    <li>Reiniciar la PC si el instalador lo pide.</li>
+    <li>Abrir Docker Desktop desde el menú Inicio y esperar a que la ballena de la barra de tareas deje de moverse.</li>
+  </ul>
+  <p>Verificar (el primero muestra una versión; el segundo, "Versión predeterminada: 2"):</p>
+  <div class="code"><pre>docker --version
+wsl --status</pre></div>
+
+  <h3>Paso 2 — Git</h3>
+  <p>Descargar desde <code>https://git-scm.com</code> e instalar con las opciones por defecto. Verificar:</p>
+  <div class="code"><pre>git --version</pre></div>
+
+  <h3>Paso 3 — Node.js</h3>
+  <ul>
+    <li>Descargar la versión <b>LTS</b> desde <code>https://nodejs.org</code> e instalar con las opciones por defecto.</li>
+    <li>Cerrar PowerShell y abrir una nueva, para que reconozca el programa recién instalado.</li>
+  </ul>
+  <p>Windows bloquea por defecto los scripts de PowerShell, y npm es uno. Habilitarlos solo para este usuario (responder <b>S</b> si pregunta):</p>
+  <div class="code"><pre>Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser</pre></div>
+  <p>Verificar:</p>
+  <div class="code"><pre>node --version
+npm --version</pre></div>
+
+  <h3>Paso 4 — Descargar el proyecto</h3>
+  <div class="code"><pre>D:
+mkdir RIS-NUESTRO
+cd D:\RIS-NUESTRO
+git clone https://github.com/heidy11/RIS-SERVER.git
+git clone https://github.com/MED-RIS/RIS.git</pre></div>
+  <p>Quedan dos carpetas: <code>RIS-SERVER</code> (backend y PACS) y <code>RIS</code> (frontend). Instalar las dependencias de cada una (tarda unos minutos):</p>
+  <div class="code"><pre>cd D:\RIS-NUESTRO\RIS-SERVER
+npm install
+cd D:\RIS-NUESTRO\RIS
+npm install</pre></div>
+
+  <h3>Paso 5 — Configurar el backend</h3>
+  <div class="code"><pre>cd D:\RIS-NUESTRO\RIS-SERVER
+Copy-Item .env.example .env
+notepad .env</pre></div>
+  <p>En el Notepad, cambiar estas líneas y guardar:</p>
+  <div class="tbl"><table>
+    <tr><th class="m">Línea</th><th>Qué poner</th></tr>
+    <tr><td class="m">JWT_SECRET</td><td>Una clave larga al azar (comando abajo). Nadie la escribe nunca; es interna del servidor.</td></tr>
+    <tr><td class="m">ADMIN_EMAIL</td><td>El correo con el que se va a entrar al RIS.</td></tr>
+    <tr><td class="m">ADMIN_PASSWORD</td><td>La contraseña para entrar al RIS (distingue mayúsculas).</td></tr>
+    <tr><td class="m">MWL_ENABLED</td><td><code>true</code> — sin esto las citas nunca llegan a la worklist.</td></tr>
+    <tr><td class="m">MPPS_ENABLED</td><td><code>true</code> — para que el RIS reciba el estado del estudio desde el equipo.</td></tr>
+  </table></div>
+  <p>Para generar el <code>JWT_SECRET</code>, correr esto y pegar el resultado:</p>
+  <div class="code"><pre>-join ((48..57)+(65..90)+(97..122) | Get-Random -Count 48 | % {[char]$_})</pre></div>
+  <div class="note"><b>Importante:</b> el usuario administrador se crea la primera vez que arranca el backend, con el correo y la contraseña de este archivo. No reutilizar contraseñas de ejemplo ni de otros sistemas.</div>
+
+  <h3>Paso 6 — Base de datos</h3>
+  <div class="code"><pre>docker run -d --name ris-mongo -p 127.0.0.1:27017:27017 --restart unless-stopped -v ris-mongo-data:/data/db mongo:6.0</pre></div>
+  <p>La primera vez descarga la imagen. El <code>127.0.0.1</code> hace que la base de datos solo se pueda usar desde la propia laptop, no desde la red.</p>
+
+  <h3>Paso 7 — PACS</h3>
+  <div class="code"><pre>cd D:\RIS-NUESTRO\RIS-SERVER
+npm run pacs-lab:up</pre></div>
+  <p>La primera vez descarga varias imágenes (unos minutos). Después esperar 30 a 60 segundos y verificar; tiene que responder <code>{"count":0}</code> o un número:</p>
+  <div class="code"><pre>curl.exe http://localhost:8080/dcm4chee-arc/aets/WORKLIST/rs/mwlitems/count</pre></div>
+  <p>Opcional: cargar tres citas de prueba (CT, DX y US) con la fecha de hoy y listarlas:</p>
+  <div class="code"><pre>node pacs-lab/scripts/mwl.js seed
+node pacs-lab/scripts/mwl.js list</pre></div>
+
+  <h3 id="paso8">Paso 8 — Firewall (como administrador)</h3>
+  <p>Abrir PowerShell como administrador (clic derecho → <i>Ejecutar como administrador</i>) y correr:</p>
+  <div class="code"><pre>New-NetFirewallRule -DisplayName "RIS-PACS DICOM" -Direction Inbound -Protocol TCP -LocalPort 11112 -Action Allow
+New-NetFirewallRule -DisplayName "RIS web" -Direction Inbound -Protocol TCP -LocalPort 5173 -Action Allow
+New-NetFirewallRule -DisplayName "RIS backend" -Direction Inbound -Protocol TCP -LocalPort 5000 -Action Allow</pre></div>
+  <p>El 11112 lo usa el tomógrafo; el 5173 y el 5000 sirven para entrar al RIS desde otra PC de la red. Opcional, para que la laptop responda al ping:</p>
+  <div class="code"><pre>New-NetFirewallRule -DisplayName "Permitir ping" -Protocol ICMPv4 -IcmpType 8 -Direction Inbound -Action Allow</pre></div>
+
+  <h3>Paso 9 — Primer arranque</h3>
+  <div class="code"><pre>cd D:\RIS-NUESTRO\RIS-SERVER
+.\pacs-lab\scripts\iniciar-ris.ps1</pre></div>
+  <p>Se abre el navegador en el RIS. Entrar con el correo y la contraseña del paso 5. Si entra, la instalación está completa.</p>
+</section>
+
+<!-- ───────────── 4 ───────────── -->
+<section id="arranque">
+  <h2>4. Arranque del sistema (uso diario)</h2>
+  <p>Cada vez que se prende la laptop, un solo comando:</p>
+  <div class="code"><pre>cd D:\RIS-NUESTRO\RIS-SERVER
+.\pacs-lab\scripts\iniciar-ris.ps1</pre></div>
+  <p>El script hace, en orden:</p>
+  <ol>
+    <li>Abre Docker Desktop si no estaba abierto y espera a que esté listo.</li>
+    <li>Levanta el PACS y la base de datos, y espera a que el PACS responda.</li>
+    <li>Abre dos ventanas nuevas: la del backend y la del frontend. Tienen que quedar abiertas mientras se usa el sistema; cerrarlas apaga esa parte.</li>
+    <li>Abre el RIS en el navegador.</li>
+    <li>Avisa si falta abrir algún puerto en el firewall.</li>
+    <li>Muestra la IP de la laptop, los datos para el técnico del tomógrafo y la dirección para entrar desde otra PC.</li>
+  </ol>
+  <div class="note"><b>Nota:</b> la primera vez del día el frontend tarda cerca de un minuto en compilarse antes de abrirse.</div>
+
+  <h3>Arranque manual (si el script no está disponible)</h3>
+  <p>Primero abrir Docker Desktop desde el menú Inicio y esperar a que cargue. Después, en una PowerShell (dejarla abierta):</p>
+  <div class="code"><pre>cd D:\RIS-NUESTRO\RIS-SERVER
+npm run pacs-lab:up
+docker start ris-mongo
+npm start</pre></div>
+  <p>Y en otra PowerShell (también dejarla abierta):</p>
+  <div class="code"><pre>cd D:\RIS-NUESTRO\RIS
+npm run build -- --mode lan
+npm run preview -- --host --port 5173 --strictPort</pre></div>
+
+  <h3>Apagar</h3>
+  <p>Cerrar las ventanas del backend y del frontend. Los contenedores del PACS y la base de datos se pueden dejar: se detienen solos al cerrar Docker Desktop o apagar la laptop.</p>
+
+  <h3>Actualizar a la última versión</h3>
+  <div class="code"><pre>cd D:\RIS-NUESTRO\RIS-SERVER
+git pull
+npm install
+cd D:\RIS-NUESTRO\RIS
+git pull
+npm install</pre></div>
+  <p>Después cerrar las ventanas del backend y del frontend y volver a correr <code>iniciar-ris.ps1</code>.</p>
+
+  <h3>Entrar al RIS desde otra PC de la red</h3>
+  <p>En el navegador de la otra PC: <code>http://&lt;IP de la laptop&gt;:5173</code>. <code>iniciar-ris.ps1</code> muestra la dirección exacta al final. Requiere los puertos 5173 y 5000 abiertos (<a href="#paso8">paso 8</a>).</p>
+</section>
+
+<!-- ───────────── 5 ───────────── -->
+<section id="prueba">
+  <h2>5. Prueba con el tomógrafo</h2>
+
+  <h3>Sin el tomógrafo (simulación)</h3>
+  <ol>
+    <li>En el RIS: <b>Pacientes</b> → crear un paciente. <b>Recepción</b> → agendar una cita para hoy, modalidad CT.</li>
+    <li>Simular la consulta que hace el tomógrafo:</li>
+  </ol>
+  <div class="code"><pre>cd D:\RIS-NUESTRO\RIS-SERVER
+.\pacs-lab\scripts\simular-tomografo.ps1</pre></div>
+  <p>El simulador consulta la worklist por DICOM, igual que el equipo real, y muestra el paciente, el número de orden y el horario. Otras modalidades o equipos, y la salida completa para diagnosticar:</p>
+  <div class="code"><pre>.\pacs-lab\scripts\simular-tomografo.ps1 -Modalidad US -AeEquipo US01
+.\pacs-lab\scripts\simular-tomografo.ps1 -Completo</pre></div>
+
+  <h3>Con el tomógrafo real</h3>
+  <h4>En el tomógrafo (lo configura el técnico del equipo)</h4>
+  <p>Agregar un servidor de worklist (según la marca aparece como <i>Worklist</i>, <i>RIS</i>, <i>HIS/RIS</i> o <i>Basic Worklist</i>):</p>
+  <div class="tbl"><table>
+    <tr><th>Dato</th><th>Valor</th></tr>
+    <tr><td>AE Title del servidor</td><td class="m">WORKLIST</td></tr>
+    <tr><td>IP</td><td>La IP de la laptop en la red del tomógrafo (la muestra <code>iniciar-ris.ps1</code>)</td></tr>
+    <tr><td>Puerto</td><td class="m">11112</td></tr>
+  </table></div>
+  <p>Anotar también el AE Title propio del tomógrafo. Si el equipo tiene botón <i>Verify</i>, <i>Echo</i> o <i>Test</i>, probarlo: debe dar OK.</p>
+
+  <h4>En el RIS</h4>
+  <ol>
+    <li><b>Equipos → + Nuevo</b>: modalidad CT, el AE Title del tomógrafo (exacto, distingue mayúsculas), su IP y su puerto DICOM. Guardar.</li>
+    <li>Botón <b>Probar conexión</b> en la fila del equipo: si responde, la laptop llega al tomógrafo.</li>
+    <li>Con un solo tomógrafo registrado, toda cita CT nueva se le asigna sola. Agendar una cita CT para hoy. Las citas anteriores al registro quedan con la estación de prueba (<code>CT01</code>).</li>
+    <li>En el tomógrafo, abrir la worklist y actualizar: debe aparecer el paciente.</li>
+  </ol>
+
+  <h4>Opcional: que las imágenes vuelvan al PACS</h4>
+  <p>En el equipo se configura un destino de almacenamiento (<i>Storage</i> o <i>Archive</i>): AE Title <code>DCM4CHEE</code>, la misma IP y puerto <code>11112</code>. Si soporta MPPS, apuntarlo al mismo destino y el RIS marca la cita como en curso o terminada solo. No hace falta para probar la worklist.</p>
+</section>
+
+<!-- ───────────── 6 ───────────── -->
+<section id="troubleshooting">
+  <h2>6. Troubleshooting</h2>
+  <p>Problemas reales que aparecieron durante la instalación de la laptop de referencia, con su causa y su solución.</p>
+
+  <h3>Instalación</h3>
+  <div class="tbl"><table>
+    <tr><th>Síntoma</th><th>Causa</th><th>Solución</th></tr>
+    <tr><td><code>failed to connect to the docker API ... dockerDesktopLinuxEngine</code></td><td>Docker Desktop no está abierto. No arranca solo con Windows.</td><td>Abrirlo desde el menú Inicio, esperar a que la ballena deje de moverse y repetir. <code>iniciar-ris.ps1</code> lo hace solo.</td></tr>
+    <tr><td>"node" o "npm" no se reconoce como comando</td><td>Node.js no está instalado, o PowerShell se abrió antes de instalarlo.</td><td>Instalar Node.js LTS y abrir una PowerShell nueva.</td></tr>
+    <tr><td>"No se puede cargar el archivo npm.ps1 porque la ejecución de scripts está deshabilitada"</td><td>Política de seguridad de PowerShell.</td><td><code>Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser</code> (paso 3).</td></tr>
+    <tr><td>winget no encuentra un programa</td><td>No todos los programas están en winget.</td><td>Descargarlo desde su página oficial.</td></tr>
+    <tr><td><code>New-NetFirewallRule</code>: "Acceso denegado"</td><td>PowerShell abierta sin permisos de administrador.</td><td>Clic derecho en PowerShell → <i>Ejecutar como administrador</i>.</td></tr>
+    <tr><td>El PACS no responde justo después de <code>npm run pacs-lab:up</code></td><td>DCM4CHEE tarda en arrancar aunque el contenedor diga Running.</td><td>Esperar 30 a 60 segundos y repetir el <code>curl.exe</code> de verificación.</td></tr>
+  </table></div>
+
+  <h3>Arranque y uso</h3>
+  <div class="tbl"><table>
+    <tr><th>Síntoma</th><th>Causa</th><th>Solución</th></tr>
+    <tr><td>No se puede iniciar sesión o la pantalla de login no responde</td><td>La ventana del backend está cerrada, o el backend no conectó a la base de datos.</td><td>Volver a correr <code>iniciar-ris.ps1</code>. Si sigue, en la ventana del backend buscar "MongoDB Conectado"; si no aparece: <code>docker start ris-mongo</code>.</td></tr>
+    <tr><td>El usuario o la contraseña no funcionan</td><td>El administrador se crea con los datos del <code>.env</code> la primera vez que arranca el backend.</td><td>Revisar <code>ADMIN_EMAIL</code> y <code>ADMIN_PASSWORD</code> en <code>RIS-SERVER\.env</code> (distinguen mayúsculas).</td></tr>
+    <tr><td>"Puerto en uso" o el sistema aparece dos veces</td><td>Ya había una ventana del backend o del frontend abierta.</td><td>Cerrar las ventanas viejas antes de volver a arrancar. El script detecta si ya están corriendo y no las duplica.</td></tr>
+    <tr><td>Desde otra PC no carga <code>http://&lt;IP&gt;:5173</code></td><td>Faltan los puertos 5173/5000 en el firewall, el frontend se arrancó en modo desarrollo, o la red Wi-Fi aísla a los dispositivos.</td><td>Abrir los puertos (<a href="#paso8">paso 8</a>), arrancar con <code>iniciar-ris.ps1</code>, y si sigue probar con cable (las redes de invitados suelen aislar los dispositivos).</td></tr>
+    <tr><td>El ping a la laptop no responde</td><td>Windows bloquea el ping por defecto. No es un problema: el tomógrafo no lo usa.</td><td>Probar el puerto real desde la otra PC: <code>Test-NetConnection &lt;IP de la laptop&gt; -Port 11112</code> (debe decir <code>TcpTestSucceeded : True</code>). O habilitar el ping (paso 8, opcional).</td></tr>
+  </table></div>
+
+  <h3>Worklist y tomógrafo</h3>
+  <div class="tbl"><table>
+    <tr><th>Síntoma</th><th>Causa</th><th>Solución</th></tr>
+    <tr><td>La cita se agendó pero no llega a la worklist</td><td><code>MWL_ENABLED=false</code> en el <code>.env</code>, o una versión vieja del sistema.</td><td>Poner <code>MWL_ENABLED=true</code> y reiniciar el backend. Actualizar con <code>git pull</code> (sección 4): una versión anterior generaba números de orden de 17 caracteres y DICOM acepta 16.</td></tr>
+    <tr><td>El simulador no muestra ninguna cita</td><td>La cita no es de hoy, o es de otra modalidad.</td><td>Agendar para hoy y en la modalidad que se consulta (<code>-Modalidad</code>). Para ver el error: <code>simular-tomografo.ps1 -Completo</code>.</td></tr>
+    <tr><td>El Echo/Verify del tomógrafo falla</td><td>IP mal escrita, la laptop está en otra red o subred, o el firewall.</td><td>Revisar la IP con <code>ipconfig</code>, que ambos estén en la misma red, y el puerto 11112 en el firewall. Desde la laptop: <code>ping &lt;IP del tomógrafo&gt;</code>.</td></tr>
+    <tr><td>El Echo da OK pero la worklist del equipo está vacía</td><td>La cita no es de hoy, la modalidad no coincide, o el equipo solo muestra las citas de su propio AE Title.</td><td>Registrar el tomógrafo en Equipos con su AE Title exacto y agendar una cita nueva.</td></tr>
+    <tr><td>El simulador ve la cita pero el tomógrafo no</td><td>Filtros en la pantalla de worklist del equipo.</td><td>Revisar en el equipo los filtros de fecha, modalidad y "solo mi estación".</td></tr>
+  </table></div>
+</section>
+
+<!-- ───────────── 7 ───────────── -->
+<section id="referencia">
+  <h2>7. Datos de referencia</h2>
+
+  <h3>Puertos</h3>
+  <div class="tbl"><table>
+    <tr><th class="m">Puerto</th><th>Uso</th><th>¿Abrir en el firewall?</th></tr>
+    <tr><td class="m">5173</td><td>RIS (navegador)</td><td>Sí, para entrar desde otra PC</td></tr>
+    <tr><td class="m">5000</td><td>Backend del RIS</td><td>Sí, para entrar desde otra PC</td></tr>
+    <tr><td class="m">11112</td><td>DICOM: worklist e imágenes (tomógrafo)</td><td>Sí</td></tr>
+    <tr><td class="m">8080</td><td>Servicios web del PACS (uso interno)</td><td>No hace falta</td></tr>
+    <tr><td class="m">27017</td><td>Base de datos (solo la propia laptop)</td><td>No</td></tr>
+  </table></div>
+
+  <h3>AE Titles</h3>
+  <div class="tbl"><table>
+    <tr><th class="m">AE Title</th><th>Qué es</th></tr>
+    <tr><td class="m">WORKLIST</td><td>Servidor de worklist: es el que se configura en el tomógrafo.</td></tr>
+    <tr><td class="m">DCM4CHEE</td><td>Archivo del PACS: destino para enviar imágenes y MPPS.</td></tr>
+    <tr><td class="m">CT01 / XRAY01 / US01</td><td>Estaciones de prueba. En uso real se reemplazan por el AE de cada equipo, registrándolo en Equipos.</td></tr>
+  </table></div>
+
+  <h3>Carpetas y archivos</h3>
+  <div class="tbl"><table>
+    <tr><th>Ruta</th><th>Contenido</th></tr>
+    <tr><td class="m">D:\RIS-NUESTRO\RIS-SERVER</td><td>Backend y PACS</td></tr>
+    <tr><td class="m">D:\RIS-NUESTRO\RIS-SERVER\.env</td><td>Configuración: credenciales del administrador y conexión con el PACS</td></tr>
+    <tr><td class="m">...\pacs-lab\scripts\iniciar-ris.ps1</td><td>Arranque de todo el sistema</td></tr>
+    <tr><td class="m">...\pacs-lab\scripts\simular-tomografo.ps1</td><td>Simulador del tomógrafo</td></tr>
+    <tr><td class="m">...\pacs-lab\GUIA-LAPTOP.html</td><td>Esta guía</td></tr>
+    <tr><td class="m">D:\RIS-NUESTRO\RIS</td><td>Frontend del RIS</td></tr>
+  </table></div>
+
+  <h3>Comandos útiles</h3>
+  <div class="code"><pre>docker ps                                  # qué contenedores están corriendo
+node pacs-lab/scripts/mwl.js list          # la worklist completa
+node pacs-lab/scripts/mwl.js ping          # verificar el PACS
+ipconfig                                   # la IP de la laptop
+Test-NetConnection &lt;IP&gt; -Port 11112        # probar la conexión DICOM desde otra PC</pre></div>
+</section>
+
+<footer>Guía del sistema RIS + PACS. Para abrirla sin internet: doble clic en el archivo.</footer>
+</div>
+
+<script>
+  // En pantallas chicas cada fila se muestra como tarjeta: cada celda lleva el nombre de su columna.
+  document.querySelectorAll('.tbl table').forEach(function (t) {
+    var titulos = Array.prototype.map.call(t.rows[0].cells, function (c) { return c.textContent; });
+    Array.prototype.slice.call(t.rows, 1).forEach(function (fila) {
+      Array.prototype.forEach.call(fila.cells, function (celda, i) { celda.setAttribute('data-label', titulos[i] || ''); });
+    });
+  });
+
+  document.querySelectorAll('.code').forEach(function (box) {
+    var pre = box.querySelector('pre');
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = 'Copiar';
+    btn.setAttribute('aria-label', 'Copiar comando');
+    btn.addEventListener('click', function () {
+      var texto = pre.innerText;
+      var listo = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
+      var seleccionar = function () {
+        var r = document.createRange(); r.selectNodeContents(pre);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        try { document.execCommand('copy'); listo(); } catch (e) { btn.textContent = 'Ctrl+C'; }
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(listo, seleccionar);
+      } else {
+        seleccionar();
+      }
+    });
+    box.appendChild(btn);
+  });
+</script>
+</body>
+</html>
