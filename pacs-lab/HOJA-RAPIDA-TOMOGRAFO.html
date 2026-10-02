@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hoja rápida tomógrafo</title>
+<style>
+  /* layout: documento de una columna con índice fijo arriba; hoja rápida primero, guía completa después */
+  :root {
+    --bg: #f5f7f6;
+    --surface: #ffffff;
+    --border: #d9e1dd;
+    --fg: #17241e;
+    --muted: #5a6b63;
+    --accent: #146c48;
+    --accent-soft: #e3f3eb;
+    --code-bg: #f0f3f1;
+    --warn-bg: #fff4e2;
+    --warn-fg: #7a4b00;
+    --font: "Segoe UI", -apple-system, Roboto, Arial, sans-serif;
+    --mono: Consolas, "Cascadia Mono", "Courier New", monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1412; --surface: #161d1a; --border: #2b3631; --fg: #e9f0ec; --muted: #9aaba2;
+      --accent: #45c98c; --accent-soft: #163327; --code-bg: #0b0f0d; --warn-bg: #33270f; --warn-fg: #f2c879;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1412; --surface: #161d1a; --border: #2b3631; --fg: #e9f0ec; --muted: #9aaba2;
+    --accent: #45c98c; --accent-soft: #163327; --code-bg: #0b0f0d; --warn-bg: #33270f; --warn-fg: #f2c879;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.6 var(--font); }
+  .wrap { max-width: 860px; margin: 0 auto; padding-inline: 16px; padding-block: 0 64px; }
+  header.top { padding-block: 32px 8px; }
+  header.top h1 { font-size: clamp(24px, 4vw, 32px); margin: 0 0 4px; text-wrap: balance; }
+  header.top p { margin: 0; color: var(--muted); }
+  nav.toc {
+    position: sticky; top: 0; z-index: 5; background: var(--bg);
+    border-bottom: 1px solid var(--border); padding-block: 10px; margin-bottom: 8px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  nav.toc a {
+    font-size: 13px; text-decoration: none; color: var(--accent);
+    padding: 4px 10px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface);
+  }
+  nav.toc a:hover, nav.toc a:focus-visible { background: var(--accent-soft); outline: none; }
+  section { padding-top: 12px; }
+  h2 { font-size: 22px; margin: 36px 0 8px; padding-top: 8px; border-top: 2px solid var(--accent); text-wrap: balance; }
+  h3 { font-size: 17px; margin: 24px 0 6px; }
+  h4 { font-size: 15px; margin: 18px 0 4px; }
+  p, li { max-width: 72ch; }
+  ul, ol { padding-left: 22px; }
+  li { margin: 3px 0; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0; }
+  .quick { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 4px 20px 16px; }
+  .code {
+    position: relative; background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 8px; margin: 8px 0 14px; min-width: 0;
+  }
+  .code pre {
+    margin: 0; padding: 12px 14px; padding-right: 76px; overflow-x: auto;
+    font: 13.5px/1.55 var(--mono); white-space: pre;
+  }
+  .code button {
+    position: absolute; top: 8px; right: 8px; font: 12px var(--font);
+    background: var(--surface); color: var(--fg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 9px; cursor: pointer;
+  }
+  .code button:hover, .code button:focus-visible { border-color: var(--accent); outline: none; }
+  code { font-family: var(--mono); font-size: 13.5px; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+  .note { background: var(--warn-bg); color: var(--warn-fg); border-radius: 8px; padding: 10px 14px; margin: 10px 0 14px; }
+  .note b { color: inherit; }
+  .tbl { overflow-x: auto; margin: 8px 0 16px; border: 1px solid var(--border); border-radius: 8px; }
+  table { border-collapse: collapse; width: 100%; background: var(--surface); font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { background: var(--accent-soft); font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  td.m, th.m { font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+  .steps { counter-reset: paso; list-style: none; padding-left: 0; }
+  footer { margin-top: 48px; color: var(--muted); font-size: 13px; }
+  td code { overflow-wrap: anywhere; }
+  @media (max-width: 640px) {
+    .tbl { border: none; }
+    .tbl table, .tbl tbody, .tbl tr, .tbl td { display: block; width: 100%; }
+    .tbl tr:first-child { display: none; }
+    .tbl tr { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+    .tbl td { border-bottom: 1px solid var(--border); white-space: normal; }
+    .tbl td::before {
+      content: attr(data-label); display: block; font-family: var(--font);
+      font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
+    }
+  }
+  @media print {
+    nav.toc, .code button { display: none; }
+    body { background: #fff; color: #000; font-size: 11pt; }
+    .quick, .code, .tbl, table { background: #fff; }
+    h2 { break-before: page; }
+    .quick h2 { break-before: auto; }
+  }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <p class="eyebrow">Sistema RIS + PACS · versión del 1 de octubre de 2026</p>
+  <h1>Prueba con el tomógrafo: hoja rápida</h1>
+  <p>Para tener a mano (o impresa) frente al equipo. El detalle de cada paso está en GUIA-LAPTOP.html.</p>
+</header>
+<section id="rapida" class="quick">
+  <h2>Hoja rápida: prueba con el tomógrafo</h2>
+  <p>Para tener a mano frente al equipo. Cada paso tiene más detalle más abajo.</p>
+
+  <h3>1. Arrancar (al llegar)</h3>
+  <div class="code"><pre>cd D:\RIS-NUESTRO\RIS-SERVER
+.\pacs-lab\scripts\iniciar-ris.ps1</pre></div>
+  <ul>
+    <li>Esperar a que abra el navegador con el RIS (la primera vez del día, cerca de un minuto).</li>
+    <li>No cerrar las dos ventanas que se abren (backend y frontend).</li>
+    <li>Conectar la laptop a la red del tomógrafo y volver a correr el script: al final muestra la IP en esa red.</li>
+  </ul>
+
+  <h3>2. Datos para el técnico del tomógrafo</h3>
+  <div class="tbl"><table>
+    <tr><th>Dato</th><th>Valor</th></tr>
+    <tr><td>AE Title del servidor de worklist</td><td class="m">WORKLIST</td></tr>
+    <tr><td>IP</td><td>La que muestra el script en la red del tomógrafo</td></tr>
+    <tr><td>Puerto</td><td class="m">11112</td></tr>
+  </table></div>
+  <p>Pedirle además el <b>AE Title propio del tomógrafo</b>, su IP y su puerto DICOM. Si el equipo tiene botón <i>Verify</i>, <i>Echo</i> o <i>Test</i>, probarlo: debe dar OK.</p>
+
+  <h3>3. Registrar el tomógrafo en el RIS</h3>
+  <ul>
+    <li><b>Equipos → + Nuevo</b>: modalidad <code>CT</code>, AE Title del tomógrafo (exacto, distingue mayúsculas), su IP y su puerto. Guardar.</li>
+    <li>Botón <b>Probar conexión</b> en la fila del equipo: debe responder.</li>
+  </ul>
+
+  <h3>4. La prueba</h3>
+  <ul>
+    <li><b>Pacientes</b> → crear un paciente. <b>Recepción</b> → cita <b>para hoy</b>, modalidad <code>CT</code>.</li>
+    <li>Simular primero desde la laptop (reemplazar por el AE real del tomógrafo):</li>
+  </ul>
+  <div class="code"><pre>.\pacs-lab\scripts\simular-tomografo.ps1 -AeEquipo AE_DEL_TOMOGRAFO</pre></div>
+  <ul>
+    <li>En el tomógrafo: abrir la worklist y actualizar (<i>Reload</i>, <i>Refresh</i> o <i>Query</i>). Debe aparecer el paciente.</li>
+  </ul>
+  <div class="note"><b>Ojo con la fecha:</b> los equipos solo muestran las citas de hoy. Las citas de prueba cargadas antes son de otro día; para recrearlas con la fecha de hoy:</div>
+  <div class="code"><pre>node pacs-lab/scripts/mwl.js purge
+node pacs-lab/scripts/mwl.js seed</pre></div>
+
+  <h3>5. Si algo falla</h3>
+  <div class="tbl"><table>
+    <tr><th>Qué pasa</th><th>Qué hacer</th></tr>
+    <tr><td>El script dice que Docker no arrancó</td><td>Abrir Docker Desktop desde el menú Inicio, esperar a que la ballena deje de moverse y volver a correr el script.</td></tr>
+    <tr><td>El script avisa "puerto no abierto en el firewall"</td><td>PowerShell como administrador y los comandos del paso 8 de la guía completa (GUIA-LAPTOP.html).</td></tr>
+    <tr><td>No puedo entrar al RIS</td><td>Revisar que la ventana del backend siga abierta. Si no, volver a correr el script.</td></tr>
+    <tr><td>El Echo del tomógrafo falla</td><td>Misma red y subred que la laptop, IP bien escrita. Desde la laptop: <code>ping &lt;IP del tomógrafo&gt;</code></td></tr>
+    <tr><td>Echo OK pero la worklist del equipo está vacía</td><td>Cita de hoy, modalidad CT, y tomógrafo registrado en Equipos con su AE exacto (agendar una cita nueva después de registrarlo).</td></tr>
+    <tr><td>El simulador muestra la cita pero el equipo no</td><td>Revisar los filtros de la worklist en el equipo: fecha, modalidad, "solo mi estación".</td></tr>
+    <tr><td>El simulador no muestra nada</td><td>Correr <code>simular-tomografo.ps1 -Completo</code> y guardar la salida (foto o copia).</td></tr>
+    <tr><td>El ping a la laptop no responde</td><td>Es normal: Windows lo bloquea. Probar con <code>Test-NetConnection &lt;IP laptop&gt; -Port 11112</code></td></tr>
+  </table></div>
+  <p><b>Soporte remoto:</b> si algo no se resuelve, la laptop tiene AnyDesk y acceso a internet. Abrir AnyDesk y pasar el código para revisarlo en vivo.</p>
+</section>
+<footer>Hoja rápida del sistema RIS + PACS. Se abre sin internet con doble clic.</footer>
+</div>
+<script>
+  // En pantallas chicas cada fila se muestra como tarjeta: cada celda lleva el nombre de su columna.
+  document.querySelectorAll('.tbl table').forEach(function (t) {
+    var titulos = Array.prototype.map.call(t.rows[0].cells, function (c) { return c.textContent; });
+    Array.prototype.slice.call(t.rows, 1).forEach(function (fila) {
+      Array.prototype.forEach.call(fila.cells, function (celda, i) { celda.setAttribute('data-label', titulos[i] || ''); });
+    });
+  });
+
+  document.querySelectorAll('.code').forEach(function (box) {
+    var pre = box.querySelector('pre');
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = 'Copiar';
+    btn.setAttribute('aria-label', 'Copiar comando');
+    btn.addEventListener('click', function () {
+      var texto = pre.innerText;
+      var listo = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
+      var seleccionar = function () {
+        var r = document.createRange(); r.selectNodeContents(pre);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        try { document.execCommand('copy'); listo(); } catch (e) { btn.textContent = 'Ctrl+C'; }
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(listo, seleccionar);
+      } else {
+        seleccionar();
+      }
+    });
+    box.appendChild(btn);
+  });
+</script>
+</body>
+</html>

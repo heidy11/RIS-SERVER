@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guía de servidor RIS</title>
+<style>
+  /* layout: documento de una columna con índice fijo arriba; hoja rápida primero, guía completa después */
+  :root {
+    --bg: #f5f7f6;
+    --surface: #ffffff;
+    --border: #d9e1dd;
+    --fg: #17241e;
+    --muted: #5a6b63;
+    --accent: #146c48;
+    --accent-soft: #e3f3eb;
+    --code-bg: #f0f3f1;
+    --warn-bg: #fff4e2;
+    --warn-fg: #7a4b00;
+    --font: "Segoe UI", -apple-system, Roboto, Arial, sans-serif;
+    --mono: Consolas, "Cascadia Mono", "Courier New", monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1412; --surface: #161d1a; --border: #2b3631; --fg: #e9f0ec; --muted: #9aaba2;
+      --accent: #45c98c; --accent-soft: #163327; --code-bg: #0b0f0d; --warn-bg: #33270f; --warn-fg: #f2c879;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1412; --surface: #161d1a; --border: #2b3631; --fg: #e9f0ec; --muted: #9aaba2;
+    --accent: #45c98c; --accent-soft: #163327; --code-bg: #0b0f0d; --warn-bg: #33270f; --warn-fg: #f2c879;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.6 var(--font); }
+  .wrap { max-width: 860px; margin: 0 auto; padding-inline: 16px; padding-block: 0 64px; }
+  header.top { padding-block: 32px 8px; }
+  header.top h1 { font-size: clamp(24px, 4vw, 32px); margin: 0 0 4px; text-wrap: balance; }
+  header.top p { margin: 0; color: var(--muted); }
+  nav.toc {
+    position: sticky; top: 0; z-index: 5; background: var(--bg);
+    border-bottom: 1px solid var(--border); padding-block: 10px; margin-bottom: 8px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  nav.toc a {
+    font-size: 13px; text-decoration: none; color: var(--accent);
+    padding: 4px 10px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface);
+  }
+  nav.toc a:hover, nav.toc a:focus-visible { background: var(--accent-soft); outline: none; }
+  section { padding-top: 12px; }
+  h2 { font-size: 22px; margin: 36px 0 8px; padding-top: 8px; border-top: 2px solid var(--accent); text-wrap: balance; }
+  h3 { font-size: 17px; margin: 24px 0 6px; }
+  h4 { font-size: 15px; margin: 18px 0 4px; }
+  p, li { max-width: 72ch; }
+  ul, ol { padding-left: 22px; }
+  li { margin: 3px 0; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0; }
+  .quick { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 4px 20px 16px; }
+  .code {
+    position: relative; background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 8px; margin: 8px 0 14px; min-width: 0;
+  }
+  .code pre {
+    margin: 0; padding: 12px 14px; padding-right: 76px; overflow-x: auto;
+    font: 13.5px/1.55 var(--mono); white-space: pre;
+  }
+  .code button {
+    position: absolute; top: 8px; right: 8px; font: 12px var(--font);
+    background: var(--surface); color: var(--fg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 9px; cursor: pointer;
+  }
+  .code button:hover, .code button:focus-visible { border-color: var(--accent); outline: none; }
+  code { font-family: var(--mono); font-size: 13.5px; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+  .note { background: var(--warn-bg); color: var(--warn-fg); border-radius: 8px; padding: 10px 14px; margin: 10px 0 14px; }
+  .note b { color: inherit; }
+  .tbl { overflow-x: auto; margin: 8px 0 16px; border: 1px solid var(--border); border-radius: 8px; }
+  table { border-collapse: collapse; width: 100%; background: var(--surface); font-size: 14px; }
+  th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { background: var(--accent-soft); font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  td.m, th.m { font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+  .steps { counter-reset: paso; list-style: none; padding-left: 0; }
+  footer { margin-top: 48px; color: var(--muted); font-size: 13px; }
+  td code { overflow-wrap: anywhere; }
+  @media (max-width: 640px) {
+    .tbl { border: none; }
+    .tbl table, .tbl tbody, .tbl tr, .tbl td { display: block; width: 100%; }
+    .tbl tr:first-child { display: none; }
+    .tbl tr { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; overflow: hidden; }
+    .tbl td { border-bottom: 1px solid var(--border); white-space: normal; }
+    .tbl td::before {
+      content: attr(data-label); display: block; font-family: var(--font);
+      font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
+    }
+  }
+  @media print {
+    nav.toc, .code button { display: none; }
+    body { background: #fff; color: #000; font-size: 11pt; }
+    .quick, .code, .tbl, table { background: #fff; }
+    h2 { break-before: page; }
+    .quick h2 { break-before: auto; }
+  }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <p class="eyebrow">Sistema RIS + PACS · versión del 1 de octubre de 2026</p>
+  <h1>Guía de instalación en servidor</h1>
+  <p>Cómo montar el RIS (frontend y backend) en un servidor con Docker, conectarlo a un PACS, publicarlo con dominio y resolver los problemas que ya aparecieron en los servidores de producción.</p>
+</header>
+
+<nav class="toc" aria-label="Índice">
+  <a href="#arquitectura">Arquitectura</a>
+  <a href="#requisitos">Requisitos</a>
+  <a href="#backend">Backend</a>
+  <a href="#frontend">Frontend</a>
+  <a href="#pacs">Conectar un PACS</a>
+  <a href="#credenciales">Credenciales</a>
+  <a href="#dominio">Dominio y HTTPS</a>
+  <a href="#seguridad">Seguridad</a>
+  <a href="#actualizar">Actualizar</a>
+  <a href="#troubleshooting">Troubleshooting</a>
+  <a href="#checklist">Checklist</a>
+</nav>
+
+<section id="arquitectura">
+  <h2>1. Arquitectura</h2>
+  <p>El sistema son dos repositorios y un PACS:</p>
+  <div class="tbl"><table>
+    <tr><th>Parte</th><th>Repositorio</th><th>Qué es</th></tr>
+    <tr><td>Backend</td><td class="m">heidy11/RIS-SERVER</td><td>API (Node.js + MongoDB). Guarda los datos y manda cada cita a la worklist del PACS.</td></tr>
+    <tr><td>Frontend</td><td class="m">MED-RIS/RIS</td><td>El sistema que usa el personal, en el navegador.</td></tr>
+    <tr><td>PACS</td><td>DCM4CHEE (imagen oficial de Docker)</td><td>Worklist DICOM e imágenes. Puede ser uno existente o el de laboratorio del repo (<code>pacs-lab</code>).</td></tr>
+  </table></div>
+  <p>En el servidor de producción, cada parte corre en un contenedor Docker con un puerto propio, y el nginx del servidor (fuera de Docker) recibe el tráfico HTTPS de cada dominio y lo reparte al puerto que corresponde:</p>
+  <div class="code"><pre>Internet ──HTTPS──▶ nginx del servidor (certificados certbot)
+                       ├── ris.&lt;cliente&gt;.signa-engineering.com   ──▶ contenedor frontend (puerto propio)
+                       └── dominio del backend                    ──▶ contenedor backend  (puerto propio)
+contenedor backend ──REST──▶ PACS (DCM4CHEE)        contenedor backend ──▶ MongoDB</pre></div>
+</section>
+
+<section id="requisitos">
+  <h2>2. Requisitos</h2>
+  <ul>
+    <li>Servidor Linux con Docker y Docker Compose, y un usuario que pueda usar Docker (grupo <code>docker</code>).</li>
+    <li>Git.</li>
+    <li><b>Acceso root o sudo</b> solo para: configurar nginx, emitir o renovar certificados y el firewall. Sin eso hay que pedírselo al administrador del servidor.</li>
+    <li>Un registro DNS del dominio apuntando a la IP del servidor (lo crea quien administra el DNS de signa-engineering.com).</li>
+  </ul>
+</section>
+
+<section id="backend">
+  <h2>3. Backend (RIS-SERVER)</h2>
+  <h3>Descargar y configurar</h3>
+  <div class="code"><pre>git clone https://github.com/heidy11/RIS-SERVER.git ris-server-&lt;cliente&gt;
+cd ris-server-&lt;cliente&gt;
+cp .env.example .env
+nano .env</pre></div>
+  <p>Variables a definir en el <code>.env</code>:</p>
+  <div class="tbl"><table>
+    <tr><th class="m">Variable</th><th>Qué poner</th></tr>
+    <tr><td class="m">JWT_SECRET</td><td>Una clave al azar, propia de esta instalación. Generarla con <code>openssl rand -hex 32</code>.</td></tr>
+    <tr><td class="m">ADMIN_EMAIL / ADMIN_PASSWORD</td><td>El administrador inicial. Se crea la primera vez que arranca el backend. Nunca dejar los valores de ejemplo.</td></tr>
+    <tr><td class="m">MWL_ENABLED</td><td><code>true</code> para que las citas lleguen a la worklist.</td></tr>
+    <tr><td class="m">MPPS_ENABLED</td><td><code>true</code> para recibir el estado del estudio desde el equipo.</td></tr>
+    <tr><td class="m">DCM4CHEE_BASE_URL</td><td>Dirección del PACS, por ejemplo <code>http://localhost:8080/dcm4chee-arc</code>.</td></tr>
+    <tr><td class="m">DCM4CHEE_AET</td><td>AE Title del archivo del PACS (ver sección 5).</td></tr>
+    <tr><td class="m">DCM4CHEE_MWL_AET</td><td>AE Title de la worklist del PACS (ver sección 5). No viene en el <code>.env.example</code>: agregar la línea si el PACS no usa <code>WORKLIST</code>.</td></tr>
+  </table></div>
+
+  <h3>Antes de levantar: puertos solo hacia adentro</h3>
+  <p>El <code>docker-compose.yml</code> del repo publica MongoDB y el backend a toda la red. En un servidor con IP pública, editar los puertos para que solo los vea el propio servidor (nginx sigue llegando igual):</p>
+  <div class="code"><pre>    ports:
+      - "127.0.0.1:27017:27017"     # mongodb-server: antes "27017:27017"
+    ...
+    ports:
+      - "127.0.0.1:5000:5000"       # backend-server: antes "5000:5000"</pre></div>
+  <p>Si en el servidor ya hay otra instalación, cambiar también el <code>container_name</code> de los dos servicios y el puerto del lado izquierdo (por ejemplo <code>127.0.0.1:5003:5000</code>): los nombres y puertos no pueden repetirse en todo el servidor.</p>
+
+  <h3>Levantar y verificar</h3>
+  <div class="code"><pre>docker compose up -d --build
+docker compose logs -f backend-server</pre></div>
+  <p>En los logs tienen que aparecer <code>MongoDB Conectado...</code> y <code>[MWL] Adapter activo</code>. Salir de los logs con Ctrl+C (el backend sigue corriendo).</p>
+</section>
+
+<section id="frontend">
+  <h2>4. Frontend (RIS)</h2>
+  <div class="code"><pre>git clone https://github.com/MED-RIS/RIS.git ris-&lt;cliente&gt;
+cd ris-&lt;cliente&gt;
+nano .env</pre></div>
+  <p>En el <code>.env</code>, <code>VITE_API_URL</code> con la dirección pública del backend, por ejemplo <code>VITE_API_URL=https://api.&lt;cliente&gt;.signa-engineering.com</code>.</p>
+  <div class="note"><b>Importante:</b> <code>VITE_API_URL</code> queda fijo dentro del frontend al compilarlo. Si se cambia después, hay que volver a compilar (<code>docker compose up -d --build ris-prod</code>).</div>
+  <p>En <code>docker-compose.yml</code>, servicio <code>ris-prod</code>: poner un <code>container_name</code> único en el servidor (por ejemplo <code>ris-&lt;cliente&gt;-frontend-prod</code>) y el puerto con el que lo va a buscar nginx (por ejemplo <code>"127.0.0.1:6001:80"</code>). Después:</p>
+  <div class="code"><pre>docker compose up -d --build ris-prod
+docker ps | grep ris-</pre></div>
+  <div class="note"><b>Nunca usar el servicio <code>ris-dev</code> detrás de un dominio público.</b> Es el servidor de desarrollo de Vite: permite leer archivos del servidor desde internet. <code>ris-prod</code> compila el sistema y lo sirve con nginx, sin ese riesgo.</div>
+</section>
+
+<section id="pacs">
+  <h2>5. Conectar con un PACS existente</h2>
+  <p>Cada instalación de DCM4CHEE puede tener sus AE Titles con otro nombre. Hay que averiguarlos, no suponerlos. Desde el servidor:</p>
+  <div class="code"><pre>curl -s http://localhost:8080/dcm4chee-arc/aets</pre></div>
+  <p>Responde la lista de AE Titles (por ejemplo, en el PACS de producción de CNS el que sirve es <code>NUBEMEDVIEWER</code>; los que terminan en <code>_ADMIN</code> o <code>_TRASH</code> no se usan). Probar la worklist con el candidato:</p>
+  <div class="code"><pre>curl -s -o /dev/null -w "%{http_code}\n" "http://localhost:8080/dcm4chee-arc/aets/NUBEMEDVIEWER/rs/mwlitems?limit=5"</pre></div>
+  <div class="tbl"><table>
+    <tr><th>Respuesta</th><th>Significado</th></tr>
+    <tr><td class="m">200 o 204</td><td>Ese AE sirve la worklist (204 = funciona pero todavía está vacía). Usarlo en <code>DCM4CHEE_AET</code> y <code>DCM4CHEE_MWL_AET</code>.</td></tr>
+    <tr><td class="m">404</td><td>Ese AE no sirve la worklist: probar otro de la lista.</td></tr>
+  </table></div>
+  <p>Las versiones viejas de DCM4CHEE (por ejemplo la 5.12 de producción) piden un formato distinto para dar de alta pacientes; el backend actual ya lo detecta y se adapta solo.</p>
+</section>
+
+<section id="credenciales">
+  <h2>6. Credenciales</h2>
+  <ul>
+    <li>Ningún usuario ni contraseña real va en el código ni en la documentación: se definen en el <code>.env</code> de cada instalación, distintas en cada una.</li>
+    <li>El administrador inicial sale de <code>ADMIN_EMAIL</code> y <code>ADMIN_PASSWORD</code> la primera vez que arranca el backend.</li>
+    <li>Si alguna instalación quedó con la contraseña de ejemplo que circuló en el repositorio, cambiarla: es pública.</li>
+    <li>Las credenciales de cada ambiente se comparten por un canal privado, nunca por el repositorio ni por chat abierto.</li>
+  </ul>
+</section>
+
+<section id="dominio">
+  <h2>7. Publicar con dominio y HTTPS</h2>
+  <p>Requiere root o sudo. Pasos:</p>
+  <ol>
+    <li>DNS: registro A del dominio apuntando a la IP del servidor. Verificar con <code>nslookup &lt;dominio&gt;</code>.</li>
+    <li>nginx: un bloque <code>server</code> por dominio que reenvíe al puerto del contenedor.</li>
+    <li>Certificado: <code>sudo certbot --nginx -d &lt;dominio&gt;</code>. Certbot configura el HTTPS y la redirección desde HTTP.</li>
+  </ol>
+  <p>Ejemplo de bloque nginx para el frontend (<code>/etc/nginx/sites-available/&lt;dominio&gt;</code>):</p>
+  <div class="code"><pre>server {
+    server_name ris.&lt;cliente&gt;.signa-engineering.com;
+    location / {
+        proxy_pass http://127.0.0.1:6001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}</pre></div>
+  <div class="code"><pre>sudo ln -s /etc/nginx/sites-available/&lt;dominio&gt; /etc/nginx/sites-enabled/
+sudo nginx -t &amp;&amp; sudo systemctl reload nginx
+sudo certbot --nginx -d &lt;dominio&gt;</pre></div>
+  <p>El backend se publica igual, con su propio dominio y su puerto.</p>
+</section>
+
+<section id="seguridad">
+  <h2>8. Seguridad: qué no debe quedar abierto a internet</h2>
+  <p>Docker publica los puertos en todas las interfaces y además se salta el firewall del sistema (ufw), así que la protección real es publicar en <code>127.0.0.1</code>. Revisar con <code>docker ps</code>: en la columna PORTS, lo que diga <code>0.0.0.0:</code> está abierto a internet.</p>
+  <div class="tbl"><table>
+    <tr><th>Servicio</th><th>Puertos típicos</th><th>¿Abierto a internet?</th></tr>
+    <tr><td>Frontend y backend</td><td class="m">5000, 6001…</td><td>No: solo nginx los usa. Publicar en <code>127.0.0.1</code>.</td></tr>
+    <tr><td>MongoDB</td><td class="m">27017, 27018…</td><td><b>Nunca.</b> No pide contraseña: cualquiera podría leer o borrar pacientes.</td></tr>
+    <tr><td>PostgreSQL</td><td class="m">5432, 5433…</td><td><b>Nunca.</b> La del PACS viene con contraseña de fábrica.</td></tr>
+    <tr><td>Consola web y administración de DCM4CHEE</td><td class="m">8080, 8443, 9990</td><td>No. El 9990 es la consola de administración de WildFly.</td></tr>
+    <tr><td>DICOM del PACS</td><td class="m">11112</td><td>Solo si los equipos se conectan desde afuera; idealmente limitado a sus IPs.</td></tr>
+  </table></div>
+  <div class="note"><b>Estado al 1 de octubre de 2026 en el servidor de Contabo:</b> los puertos 27018 y 27019 (MongoDB), 5432 y 5433 (PostgreSQL) y 8080, 8443 y 9990 (DCM4CHEE) aceptan conexiones desde internet. Corregirlo publicando esos contenedores en <code>127.0.0.1</code>.</div>
+  <p>Para corregir un contenedor ya creado, en su <code>docker-compose.yml</code> cambiar <code>"27018:27017"</code> por <code>"127.0.0.1:27018:27017"</code> (y lo mismo con cada puerto) y volver a levantarlo con <code>docker compose up -d</code>. Los datos se conservan porque viven en volúmenes. Si el contenedor se creó con <code>docker run</code>, hay que recrearlo con el mismo volumen y la nueva publicación de puertos.</p>
+</section>
+
+<section id="actualizar">
+  <h2>9. Actualizar una instalación</h2>
+  <div class="code"><pre># backend
+cd ris-server-&lt;cliente&gt;
+git pull
+docker compose up -d --build
+
+# frontend
+cd ris-&lt;cliente&gt;
+git pull
+docker compose up -d --build ris-prod</pre></div>
+  <p>Si <code>git pull</code> se queja de cambios locales (es normal: el <code>.env</code> y el <code>docker-compose.yml</code> suelen tener ajustes propios del servidor), revisar con <code>git status</code> y, si son solo esos ajustes, usar <code>git pull --autostash</code>: guarda los cambios, actualiza y los vuelve a aplicar.</p>
+</section>
+
+<section id="troubleshooting">
+  <h2>10. Troubleshooting</h2>
+  <p>Problemas reales que aparecieron en los servidores, con su causa y solución.</p>
+
+  <h3>Despliegue</h3>
+  <div class="tbl"><table>
+    <tr><th>Síntoma</th><th>Causa</th><th>Solución</th></tr>
+    <tr><td>El login funciona en local pero no en la nube; el navegador muestra un error de Vite con contenido de <code>/proc/self/mountinfo</code></td><td>El dominio apunta a <code>ris-dev</code> (servidor de desarrollo), que expone archivos del servidor.</td><td>Detener <code>ris-dev</code> y levantar <code>ris-prod</code> en el mismo puerto (sección 4).</td></tr>
+    <tr><td>"Blocked request. This host is not allowed. Add … to server.allowedHosts"</td><td>También es un servidor de desarrollo detrás del dominio.</td><td>No agregar el dominio a <code>allowedHosts</code>: reemplazar por <code>ris-prod</code>.</td></tr>
+    <tr><td>"Conflict. The container name … is already in use"</td><td>Otro proyecto del servidor usa ese <code>container_name</code>.</td><td>Poner un nombre único en el <code>docker-compose.yml</code>.</td></tr>
+    <tr><td>El frontend llama a una dirección de backend equivocada</td><td><code>VITE_API_URL</code> quedó fijo al compilar.</td><td>Corregir el <code>.env</code> del frontend y volver a compilar.</td></tr>
+    <tr><td>Git: "detected dubious ownership in repository"</td><td>La carpeta pertenece a otro usuario del servidor.</td><td><code>git config --global --add safe.directory &lt;ruta&gt;</code></td></tr>
+    <tr><td><code>git pull</code> falla por cambios locales</td><td>Ajustes propios del servidor en archivos del repo.</td><td><code>git pull --autostash</code> (sección 9).</td></tr>
+  </table></div>
+
+  <h3>Dominio y certificados</h3>
+  <div class="tbl"><table>
+    <tr><th>Síntoma</th><th>Causa</th><th>Solución</th></tr>
+    <tr><td><code>ERR_CERT_DATE_INVALID</code></td><td>Certificado vencido.</td><td>Ver la fecha: <code>echo | openssl s_client -connect &lt;dominio&gt;:443 -servername &lt;dominio&gt; 2&gt;/dev/null | openssl x509 -noout -dates</code>. Renovar: <code>sudo certbot renew</code>.</td></tr>
+    <tr><td>"&lt;usuario&gt; is not in the sudoers file"</td><td>El usuario no tiene permisos de administrador.</td><td>Pedírselo a quien administra el servidor, o restablecer la contraseña de root desde el panel de Contabo si la cuenta es propia.</td></tr>
+    <tr><td>El dominio no resuelve</td><td>Falta el registro DNS.</td><td><code>nslookup &lt;dominio&gt;</code>. Si no devuelve la IP del servidor, pedir el registro A a quien administra el DNS.</td></tr>
+  </table></div>
+
+  <h3>Worklist y PACS</h3>
+  <div class="tbl"><table>
+    <tr><th>Síntoma</th><th>Causa</th><th>Solución</th></tr>
+    <tr><td>Las citas no llegan a la worklist</td><td><code>MWL_ENABLED=false</code>, o un frontend viejo que generaba números de orden de 17 caracteres (DICOM acepta 16).</td><td><code>MWL_ENABLED=true</code> en el backend y actualizar el frontend (sección 9).</td></tr>
+    <tr><td>La consulta a <code>/rs/mwlitems</code> devuelve 404</td><td>AE Title equivocado.</td><td>Listar los AE (sección 5) y configurar el correcto.</td></tr>
+    <tr><td>HTTP 400 "Patient ID in message body"</td><td>DCM4CHEE viejo (5.12) con un backend sin actualizar.</td><td>Actualizar el backend: la versión actual se adapta sola.</td></tr>
+    <tr><td>Los logs del backend dicen "tiene 17 caracteres y DICOM admite 16"</td><td>Orden creada con un frontend viejo.</td><td>Actualizar el frontend y agendar la cita de nuevo.</td></tr>
+  </table></div>
+</section>
+
+<section id="checklist">
+  <h2>11. Checklist antes de dar por terminada una instalación</h2>
+  <ul>
+    <li>El backend muestra <code>MongoDB Conectado...</code> y <code>[MWL] Adapter activo</code>.</li>
+    <li>El frontend corre como <code>ris-prod</code>, nunca <code>ris-dev</code>.</li>
+    <li><code>.env</code> con valores propios: ni <code>JWT_SECRET</code> ni contraseñas de ejemplo.</li>
+    <li>AE Titles del PACS verificados con <code>/aets</code> y con la prueba de <code>/rs/mwlitems</code>.</li>
+    <li>En <code>docker ps</code>, ninguna base de datos ni consola de administración en <code>0.0.0.0</code>.</li>
+    <li>Certificado vigente: revisar la fecha de vencimiento.</li>
+    <li>Prueba de punta a punta: agendar una cita y verla en la worklist.</li>
+  </ul>
+</section>
+
+<footer>Guía de instalación en servidor del sistema RIS + PACS. Se abre sin internet con doble clic.</footer>
+
+</div>
+<script>
+  // En pantallas chicas cada fila se muestra como tarjeta: cada celda lleva el nombre de su columna.
+  document.querySelectorAll('.tbl table').forEach(function (t) {
+    var titulos = Array.prototype.map.call(t.rows[0].cells, function (c) { return c.textContent; });
+    Array.prototype.slice.call(t.rows, 1).forEach(function (fila) {
+      Array.prototype.forEach.call(fila.cells, function (celda, i) { celda.setAttribute('data-label', titulos[i] || ''); });
+    });
+  });
+
+  document.querySelectorAll('.code').forEach(function (box) {
+    var pre = box.querySelector('pre');
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = 'Copiar';
+    btn.setAttribute('aria-label', 'Copiar comando');
+    btn.addEventListener('click', function () {
+      var texto = pre.innerText;
+      var listo = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
+      var seleccionar = function () {
+        var r = document.createRange(); r.selectNodeContents(pre);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        try { document.execCommand('copy'); listo(); } catch (e) { btn.textContent = 'Ctrl+C'; }
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(texto).then(listo, seleccionar);
+      } else {
+        seleccionar();
+      }
+    });
+    box.appendChild(btn);
+  });
+</script>
+</body>
+</html>
