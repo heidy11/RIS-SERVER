@@ -189,6 +189,19 @@ async function searchMwlItems(params = {}, limit = 500) {
 }
 
 /**
+ * Busca un estudio del archivo por StudyInstanceUID (QIDO-RS).
+ * Devuelve el dataset DICOM JSON del estudio o null si no existe.
+ */
+async function searchStudy(studyInstanceUid) {
+  const res = await requestWithAuth({
+    method: 'GET',
+    url: `${config.rsBase}/studies`,
+    params: { StudyInstanceUID: studyInstanceUid, includefield: 'all', limit: 1 },
+  });
+  return res.status === 204 ? null : (res.data || [])[0] || null;
+}
+
+/**
  * Consulta los Modality Performed Procedure Step del archivo (Etapa 2).
  * @param {object} params filtros (p.ej. {StudyInstanceUID: '2.25...'})
  */
@@ -229,6 +242,7 @@ module.exports = {
   createOrUpdateMwlItem,
   deleteMwlItem,
   searchMwlItems,
+  searchStudy,
   searchMpps,
   countMwlItems,
   healthCheck,

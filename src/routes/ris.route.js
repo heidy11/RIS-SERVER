@@ -21,6 +21,7 @@ router.patch('/orders/:id/status', risController.updateOrderStatus);
 
 // Model: Report
 router.get('/reports/:studyInstanceUid', risController.getReportByStudyId);
+router.get('/reports/:studyInstanceUid/documento', risController.getReportDocument);
 router.post('/reports', risController.saveReport);
 
 // Model: Modality

@@ -180,7 +180,14 @@ const risController = {
   },
   saveReport: async (req, res) => {
     try {
-      const { studyInstanceUid, contentHtml, status, radiologist, orderId } = req.body;
+      const { studyInstanceUid, contentHtml, status, radiologist } = req.body;
+      // El visor no conoce la orden: se busca por el estudio, que la orden guarda
+      // desde la worklist. Sin esto el informe queda "Sin Nombre" en el RIS.
+      let orderId = req.body.orderId;
+      if (!orderId && studyInstanceUid) {
+        const orden = await RisOrder.findOne({ studyInstanceUid }).select('_id').lean();
+        if (orden) orderId = orden._id;
+      }
 
       let report = await RisReport.findOne({ studyInstanceUid });
       if (report) {
@@ -189,6 +196,7 @@ const risController = {
             .status(400)
             .json({ error: 'El reporte ya está firmado y no puede ser modificado' });
         }
+        if (!report.order && orderId) report.order = orderId;
         if (contentHtml !== undefined) report.contentHtml = contentHtml;
         if (status) report.status = status;
         if (status === 'SIGNED') report.signedAt = new Date();
@@ -401,6 +409,34 @@ const risController = {
       res.json({ message: 'Sucursal eliminada correctamente' });
     } catch (error) {
       res.status(400).json({ error: error.message });
+    }
+  },
+
+  // --- Documento del informe: ?formato=pdf (vista imprimible) | docx ---
+  getReportDocument: async (req, res) => {
+    try {
+      const report = await RisReport.findOne({ studyInstanceUid: req.params.studyInstanceUid })
+        .populate({ path: 'order', populate: { path: 'patient' } });
+      if (!report) return res.status(404).json({ error: 'El estudio todavía no tiene informe' });
+      if (!report.order) {
+        // Informes guardados antes de vincularse solos a su orden
+        const orden = await RisOrder.findOne({ studyInstanceUid: report.studyInstanceUid }).populate('patient');
+        if (orden) report.order = orden;
+      }
+
+      const informe = require('../services/informeDocumento.service');
+      const datos = await informe.armarDatos(report);
+      const nombre = informe.nombreArchivo(datos);
+
+      if (req.query.formato === 'docx') {
+        const buffer = await informe.docxInforme(datos);
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(nombre)}.docx`);
+        return res.send(buffer);
+      }
+      res.type('html').send(informe.htmlInforme(datos, { imprimir: req.query.imprimir !== '0' }));
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
   },
 

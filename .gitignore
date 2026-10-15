@@ -26,3 +26,8 @@ documents/*
 
 # OS-specific files
 .DS_Store
+
+# Scripts y paquetes del servidor de produccion (IP, firewall, codigo de produccion):
+# van a un repositorio privado, no a este que es publico
+ops/
+.claude/
