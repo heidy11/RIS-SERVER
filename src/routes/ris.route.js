@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const risController = require('../controllers/ris.controller');
+const preprogramacion = require('../controllers/preprogramacion.controller');
 const { verifyToken } = require('../middleware/auth.js');
 
 // Protect all RIS routes
@@ -90,5 +91,11 @@ router.get('/companies', risController.getCompanies);
 router.post('/companies', risController.createCompany);
 router.put('/companies/:id', risController.updateCompany);
 router.delete('/companies/:id', risController.deleteCompany);
+
+// Preprogramación del laboratorio por día (CNS), antes del registro formal
+router.get('/preprogramacion', preprogramacion.listar);
+router.post('/preprogramacion', preprogramacion.crear);
+router.put('/preprogramacion/:id', preprogramacion.actualizar);
+router.delete('/preprogramacion/:id', preprogramacion.eliminar);
 
 module.exports = router;
