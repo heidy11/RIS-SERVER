@@ -159,53 +159,70 @@ function srcLogo(logo) {
 }
 
 // Mismo HTML para la vista imprimible y para el DOCX: tablas y estilos en línea,
-// que es lo que html-to-docx respeta.
+// que es lo que html-to-docx respeta. La vista previa del visor (UploadDocuments.tsx,
+// hojaHtml) arma la misma hoja: mantenerlas iguales.
+// Colores del tema del MED Viewer (Blue-chill, --primary 180 100% 27%): el turquesa
+// para líneas y bordes, y uno más oscuro para los títulos, que impreso se lea bien.
+const ACENTO = '#008a8a';
+const TINTA = '#00585c';
+const SANS = 'Arial, Helvetica, sans-serif';
+
 function htmlInforme(d, { imprimir = false } = {}) {
   const titulo = TITULOS[d.modalidad] || 'INFORME RADIOLÓGICO';
-  const celda = 'border:1px solid #6b7280;padding:4px 8px;font-size:10pt;';
-  const fila = (a, b, c, e) => `<tr>
-      <td style="${celda}background:#f3f4f6;width:18%;"><b>${a}</b></td><td style="${celda}width:32%;">${escapar(b) || '—'}</td>
-      <td style="${celda}background:#f3f4f6;width:18%;"><b>${c}</b></td><td style="${celda}width:32%;">${escapar(e) || '—'}</td></tr>`;
   const logo = srcLogo(d.logo);
+  // Dato del paciente: etiqueta chica arriba, valor abajo
+  const dato = (etiqueta, valor, ancho) => `<td style="width:${ancho};padding:7px 10px;vertical-align:top;border-right:1px solid #cfe7e7;">
+      <div style="font-family:${SANS};font-size:6.5pt;letter-spacing:.8px;color:#6b7c85;text-transform:uppercase;">${etiqueta}</div>
+      <div style="font-family:${SANS};font-size:9.5pt;font-weight:bold;color:#1f2a30;margin-top:2px;">${escapar(valor) || '—'}</div></td>`;
+  const edadSexo = [d.edad, d.sexo].filter(Boolean).join(' · ');
 
   return `<!doctype html><html lang="es"><head><meta charset="utf-8">
 <title>${escapar(titulo)} - ${escapar(d.paciente || 'Paciente')}</title>
 <style>
-  @page { size: A4; margin: 15mm 18mm 18mm; }
-  body { font-family: "Times New Roman", Georgia, serif; color: #111827; font-size: 11.5pt; line-height: 1.5; margin: 0; }
-  .hoja { max-width: 760px; margin: 0 auto; padding: 24px; position: relative; }
-  .cuerpo h3, .cuerpo h4 { font-size: 11pt; margin: 14px 0 4px; text-transform: uppercase; text-decoration: underline; }
+  @page { size: A4; margin: 14mm 16mm 16mm; }
+  body { font-family: Georgia, "Times New Roman", serif; color: #1f2a30; font-size: 11pt; line-height: 1.55; margin: 0; background: #fff; }
+  .hoja { max-width: 760px; margin: 0 auto; padding: 26px 30px; position: relative; }
+  .cuerpo h3, .cuerpo h4 { font-family: ${SANS}; font-size: 9.5pt; font-weight: bold; letter-spacing: 1.2px; color: ${TINTA};
+    text-transform: uppercase; margin: 16px 0 6px; padding-bottom: 3px; border-bottom: 1px solid #bfe0e0; }
   .cuerpo p { margin: 0 0 6px; text-align: justify; }
-  /* Tamaño fijo: con 16vw se salía de la hoja en pantallas anchas */
-  .borrador { position: fixed; top: 42%; left: 0; right: 0; text-align: center; font-size: 84pt; font-weight: bold; letter-spacing: 6px; color: rgba(185,28,28,.08); transform: rotate(-28deg); pointer-events: none; }
+  .cuerpo ul, .cuerpo ol { margin: 0 0 6px 20px; padding: 0; }
+  .borrador { position: fixed; top: 42%; left: 0; right: 0; text-align: center; font-family: ${SANS}; font-size: min(80pt, 12vw); font-weight: bold;
+    letter-spacing: 8px; color: rgba(185,28,28,.07); transform: rotate(-28deg); pointer-events: none; }
   @media print { .hoja { padding: 0; } }
 </style></head><body><div class="hoja">
 ${d.firmado ? '' : '<div class="borrador">BORRADOR</div>'}
-<table style="width:100%;border-collapse:collapse;border-bottom:2px solid #111827;">
+<table style="width:100%;border-collapse:collapse;">
   <tr>
-    ${logo ? `<td style="width:90px;padding:0 12px 8px 0;vertical-align:middle;"><img src="${logo}" alt="" style="max-width:86px;max-height:70px;"></td>` : ''}
-    <td style="padding:0 0 8px;vertical-align:middle;">
-      <div style="font-size:16pt;font-weight:bold;text-transform:uppercase;">${escapar(d.institucion)}</div>
-      <div style="font-size:10.5pt;">Servicio de Imagenología y Diagnóstico por Imágenes</div>
+    ${logo ? `<td style="width:96px;padding:0 14px 10px 0;vertical-align:middle;"><img src="${logo}" alt="" style="max-width:92px;max-height:64px;"></td>` : ''}
+    <td style="padding:0 0 10px;vertical-align:middle;">
+      <div style="font-family:${SANS};font-size:15pt;font-weight:bold;color:${TINTA};letter-spacing:.3px;text-transform:uppercase;">${escapar(d.institucion)}</div>
+      <div style="font-family:${SANS};font-size:8.5pt;color:#5b6b73;letter-spacing:.4px;margin-top:2px;">Servicio de Imagenología y Diagnóstico por Imágenes</div>
     </td>
   </tr>
 </table>
-<p style="text-align:center;font-size:13.5pt;font-weight:bold;letter-spacing:1px;margin:16px 0 10px;">${titulo}</p>
-<table style="width:100%;border-collapse:collapse;margin-bottom:14px;">
-  ${fila('NOMBRE', d.paciente, 'C.I. / ID', d.documento)}
-  ${fila('ESTUDIO', d.estudio, 'EDAD / SEXO', [d.edad, d.sexo].filter(Boolean).join(' · '))}
-  ${fila('FECHA', d.fechaEstudio, 'N.º DE ORDEN', d.accession)}
-  ${fila('REMITE', d.solicitante, 'MODALIDAD', d.modalidad)}
+<div style="height:3px;background:${ACENTO};"></div>
+<div style="height:1px;background:#7fc6c6;margin-top:2px;"></div>
+<p style="text-align:center;font-family:${SANS};font-size:13pt;font-weight:bold;letter-spacing:3px;color:${TINTA};margin:18px 0 2px;">${titulo}</p>
+${d.estudio ? `<p style="text-align:center;font-family:${SANS};font-size:9pt;color:#5b6b73;letter-spacing:1px;margin:0 0 14px;text-transform:uppercase;">${escapar(d.estudio)}</p>` : '<div style="height:12px;"></div>'}
+<table style="width:100%;border-collapse:collapse;background:#eef8f8;border:1px solid #cfe7e7;border-left:4px solid ${ACENTO};margin-bottom:8px;">
+  <tr style="border-bottom:1px solid #cfe7e7;">
+    ${dato('Paciente', d.paciente, '40%')}${dato('C.I. / ID', d.documento, '20%')}${dato('Edad / Sexo', edadSexo, '20%')}${dato('Fecha del estudio', d.fechaEstudio, '20%')}
+  </tr>
+  <tr>
+    ${dato('Médico solicitante', d.solicitante, '40%')}${dato('Modalidad', d.modalidad, '20%')}${dato('N.º de orden', d.accession, '20%')}${dato('Médico informante', d.medico, '20%')}
+  </tr>
 </table>
 <div class="cuerpo">${d.cuerpo || '<p><i>Informe sin contenido.</i></p>'}</div>
-<table style="width:100%;margin-top:70px;"><tr><td style="width:25%;"></td>
-  <td style="width:50%;text-align:center;border-top:1px solid #111827;padding-top:6px;font-size:10.5pt;">
-    <b>${escapar(d.medico || 'Médico radiólogo')}</b><br>Médico Radiólogo
-    ${d.firmado ? `<br><span style="font-size:8.5pt;color:#374151;">Firmado electrónicamente${d.firmadoEl ? ` el ${escapar(d.firmadoEl)}` : ''}</span>` : ''}
-  </td><td style="width:25%;"></td></tr></table>
-<p style="margin-top:30px;border-top:1px solid #d1d5db;padding-top:4px;font-size:7.5pt;color:#6b7280;">
-  Estudio ${escapar(d.uid)} · Documento generado el ${escapar(fechaHora(new Date()))}
-</p>
+<table style="width:100%;margin-top:64px;border-collapse:collapse;"><tr><td style="width:45%;"></td>
+  <td style="width:55%;text-align:center;font-family:${SANS};">
+    <div style="border-top:1px solid #1f2a30;margin:0 30px;padding-top:6px;font-size:10.5pt;font-weight:bold;color:#1f2a30;">${escapar(d.medico || 'Médico radiólogo')}</div>
+    <div style="font-size:8.5pt;color:#5b6b73;letter-spacing:.5px;">MÉDICO RADIÓLOGO</div>
+    ${d.firmado ? `<div style="display:inline-block;margin-top:6px;padding:2px 10px;border:1px solid #16a34a;border-radius:99px;font-size:7.5pt;color:#15803d;letter-spacing:.5px;">✓ FIRMADO ELECTRÓNICAMENTE${d.firmadoEl ? ` · ${escapar(d.firmadoEl)}` : ''}</div>` : ''}
+  </td></tr></table>
+<table style="width:100%;margin-top:28px;border-collapse:collapse;border-top:1px solid #cfe7e7;"><tr>
+  <td style="padding-top:5px;font-family:${SANS};font-size:7pt;color:#8a979e;">${escapar(d.institucion)} · Servicio de Imagenología</td>
+  <td style="padding-top:5px;font-family:${SANS};font-size:7pt;color:#8a979e;text-align:right;">Generado el ${escapar(fechaHora(new Date()))} · Estudio ${escapar(String(d.uid || '').slice(-12))}</td>
+</tr></table>
 </div>${imprimir ? '<script>window.onload=()=>setTimeout(()=>window.print(),300)</script>' : ''}</body></html>`;
 }
 
@@ -217,7 +234,7 @@ async function docxInforme(d) {
     title: TITULOS[d.modalidad] || 'Informe radiológico',
     creator: d.institucion,
     margins: { top: 850, right: 1000, bottom: 1000, left: 1000 },
-    font: 'Times New Roman',
+    font: 'Georgia',
   });
 }
 
