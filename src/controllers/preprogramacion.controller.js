@@ -11,16 +11,29 @@ const DIA = /^\d{4}-\d{2}-\d{2}$/;
 function limpiar(body) {
   const campos = [
     'fechaExamen', 'nombreCompleto', 'matricula', 'celular', 'examenes', 'entregado', 'estado', 'paciente',
+    'emergencia',
   ];
   const datos = {};
   for (const c of campos) if (body[c] !== undefined) datos[c] = body[c];
   if (datos.examenes) datos.examenes = [].concat(datos.examenes).filter((e) => EXAMENES_LAB.includes(e));
   if (typeof datos.celular === 'string') datos.celular = datos.celular.replace(/\s+/g, '');
   for (const c of ['nombreCompleto', 'matricula']) {
-    if (typeof datos[c] === 'string') datos[c] = datos[c].trim().toUpperCase();
+    if (typeof datos[c] === 'string') datos[c] = datos[c].trim().replace(/\s+/g, ' ').toUpperCase();
   }
+  if (datos.emergencia !== undefined) datos.emergencia = datos.emergencia === true || datos.emergencia === 'true';
   return datos;
 }
+
+// El mismo paciente no se programa dos veces el mismo día. El titular y sus
+// beneficiarios comparten matrícula, por eso se compara también el nombre.
+function buscarDuplicado({ fechaExamen, matricula, nombreCompleto }, excluirId) {
+  const query = { fechaExamen, matricula, nombreCompleto };
+  if (excluirId) query._id = { $ne: excluirId };
+  return RisPreprogramacion.findOne(query).lean();
+}
+
+const mensajeDuplicado = (fila) =>
+  `${fila.nombreCompleto} ya está programado para ese día${fila.creadoPor ? ` (lo anotó ${fila.creadoPor})` : ''}`;
 
 const preprogramacionController = {
   // GET /api/ris/preprogramacion?desde=AAAA-MM-DD&hasta=AAAA-MM-DD
@@ -47,6 +60,8 @@ const preprogramacionController = {
       if (!datos.matricula) return res.status(400).json({ error: 'Falta la matrícula' });
       if (!datos.celular) return res.status(400).json({ error: 'Falta el celular' });
       if (!datos.examenes?.length) return res.status(400).json({ error: 'Marque al menos un examen' });
+      const repetida = await buscarDuplicado(datos);
+      if (repetida) return res.status(409).json({ error: mensajeDuplicado(repetida) });
       const fila = await RisPreprogramacion.create({
         ...datos,
         estado: 'PROGRAMADO',
@@ -68,6 +83,13 @@ const preprogramacionController = {
       // Firma entrega: se guarda quién y cuándo entregó los resultados
       if (datos.entregado === true) Object.assign(datos, { entregadoEl: new Date(), entregadoPor: req.user?.nombre || req.user?.correo });
       if (datos.entregado === false) Object.assign(datos, { entregadoEl: null, entregadoPor: null });
+      // Al cambiar de día, nombre o matrícula no puede quedar repetido con otro del mismo día
+      if (datos.fechaExamen || datos.matricula || datos.nombreCompleto) {
+        const actual = await RisPreprogramacion.findById(req.params.id).lean();
+        if (!actual) return res.status(404).json({ error: 'No existe esa preprogramación' });
+        const repetida = await buscarDuplicado({ ...actual, ...datos }, req.params.id);
+        if (repetida) return res.status(409).json({ error: mensajeDuplicado(repetida) });
+      }
       const fila = await RisPreprogramacion.findByIdAndUpdate(req.params.id, datos, { new: true, runValidators: true });
       if (!fila) return res.status(404).json({ error: 'No existe esa preprogramación' });
       res.json(fila);

@@ -14,6 +14,9 @@ const risPreprogramacionSchema = new mongoose.Schema(
 
     examenes: { type: [String], default: [] }, // claves de EXAMENES_LAB (ver controlador)
 
+    // EMERGENCIA: vino ese mismo día con su boleta; se registra y se atiende en el día
+    emergencia: { type: Boolean, default: false },
+
     // FIRMA ENTREGA: se marca al entregar los resultados
     entregado: { type: Boolean, default: false },
     entregadoEl: { type: Date },
