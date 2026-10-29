@@ -31,3 +31,7 @@ documents/*
 # van a un repositorio privado, no a este que es publico
 ops/
 .claude/
+
+# Estudios DICOM subidos y archivos temporales (tienen datos de pacientes)
+src/temp/
+*.dcm
