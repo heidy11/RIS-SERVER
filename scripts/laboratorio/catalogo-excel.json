@@ -1,0 +1,1663 @@
+{
+ "categorias": [
+  {
+   "id": "hematologia",
+   "storage": {
+    "mode": "flat",
+    "tipoLab": "Lab_Hemato"
+   },
+   "params": [
+    {
+     "key": "globulos_blancos"
+    },
+    {
+     "key": "globulos_rojos"
+    },
+    {
+     "key": "hto"
+    },
+    {
+     "key": "hb"
+    },
+    {
+     "key": "vcm"
+    },
+    {
+     "key": "hcm"
+    },
+    {
+     "key": "chcm"
+    },
+    {
+     "key": "plaquetas"
+    },
+    {
+     "key": "reticulocitos"
+    },
+    {
+     "key": "mielo"
+    },
+    {
+     "key": "metamie"
+    },
+    {
+     "key": "cay"
+    },
+    {
+     "key": "seg"
+    },
+    {
+     "key": "eosi"
+    },
+    {
+     "key": "baso"
+    },
+    {
+     "key": "linf"
+    },
+    {
+     "key": "mon"
+    },
+    {
+     "key": "ves_1_hora"
+    },
+    {
+     "key": "ves_2_hora"
+    },
+    {
+     "key": "indice_katz"
+    },
+    {
+     "key": "grupo_sanguineo"
+    },
+    {
+     "key": "tiempo_protrombina"
+    },
+    {
+     "key": "actividad_protrombina"
+    },
+    {
+     "key": "inr"
+    },
+    {
+     "key": "t_coagulacion_min"
+    },
+    {
+     "key": "t_coagulacion_seg"
+    },
+    {
+     "key": "t_sangria_min"
+    },
+    {
+     "key": "t_sangria_seg"
+    },
+    {
+     "key": "coombs_directo"
+    },
+    {
+     "key": "coombs_indirecto"
+    },
+    {
+     "key": "ttpa"
+    },
+    {
+     "key": "fibrinogeno"
+    },
+    {
+     "key": "frotis_sangre_periferica"
+    },
+    {
+     "key": "test_cristalizacion"
+    },
+    {
+     "key": "formula_total"
+    },
+    {
+     "key": "comentario_serie_roja"
+    },
+    {
+     "key": "comentario_serie_blanca"
+    },
+    {
+     "key": "comentario_plaquetas"
+    },
+    {
+     "key": "responsable_hemato"
+    }
+   ]
+  },
+  {
+   "id": "serologia",
+   "storage": {
+    "mode": "nested",
+    "bag": "serologiaDatos",
+    "tipoLab": "Lab_Serologia"
+   },
+   "params": [
+    {
+     "key": "hiv"
+    },
+    {
+     "key": "rpr"
+    },
+    {
+     "key": "hepatitis_b"
+    },
+    {
+     "key": "h_pylori_suero"
+    },
+    {
+     "key": "widal_o",
+     "bagOverride": "widalDatos"
+    },
+    {
+     "key": "widal_h",
+     "bagOverride": "widalDatos"
+    },
+    {
+     "key": "widal_a",
+     "bagOverride": "widalDatos"
+    },
+    {
+     "key": "widal_b",
+     "bagOverride": "widalDatos"
+    },
+    {
+     "key": "asto"
+    },
+    {
+     "key": "pcr"
+    },
+    {
+     "key": "fr"
+    },
+    {
+     "key": "test_embarazo"
+    },
+    {
+     "key": "psa_prueba_rapida"
+    },
+    {
+     "key": "sifilis_prueba_rapida"
+    },
+    {
+     "key": "chagas_prueba_rapida"
+    },
+    {
+     "key": "h_pylori_heces"
+    },
+    {
+     "key": "covid_igg"
+    },
+    {
+     "key": "covid_igm"
+    },
+    {
+     "key": "covid_rt_pcr"
+    },
+    {
+     "key": "covid_antigeno_nasal"
+    },
+    {
+     "key": "covid_igg_quimio"
+    },
+    {
+     "key": "covid_igm_quimio"
+    },
+    {
+     "key": "vdrl"
+    },
+    {
+     "key": "hepatitis_c"
+    },
+    {
+     "key": "otros_serologia"
+    },
+    {
+     "key": "responsable_serologia"
+    }
+   ]
+  },
+  {
+   "id": "urologia",
+   "storage": {
+    "mode": "nested",
+    "bag": "urologiaDatos",
+    "tipoLab": "Lab_Urologia"
+   },
+   "params": [
+    {
+     "key": "copro_muestra_1"
+    },
+    {
+     "key": "copro_muestra_2"
+    },
+    {
+     "key": "copro_muestra_3"
+    },
+    {
+     "key": "copro_moco"
+    },
+    {
+     "key": "sangre_oculta"
+    },
+    {
+     "key": "test_graham"
+    },
+    {
+     "key": "micro_albumina",
+     "bagOverride": "microDatos"
+    },
+    {
+     "key": "micro_creatinina",
+     "bagOverride": "microDatos"
+    },
+    {
+     "key": "relacion_ac",
+     "bagOverride": "microDatos"
+    },
+    {
+     "key": "copro_simple"
+    },
+    {
+     "key": "h_pylori_heces",
+     "bagOverride": "serologiaDatos"
+    },
+    {
+     "key": "rotavirus"
+    },
+    {
+     "key": "nota_copro"
+    },
+    {
+     "key": "responsable_copro"
+    },
+    {
+     "key": "cf_color"
+    },
+    {
+     "key": "cf_restos"
+    },
+    {
+     "key": "cf_ph"
+    },
+    {
+     "key": "cf_cel_epit"
+    },
+    {
+     "key": "cf_sangre"
+    },
+    {
+     "key": "cf_consistencia"
+    },
+    {
+     "key": "cf_moco"
+    },
+    {
+     "key": "cf_leuco"
+    },
+    {
+     "key": "cf_eritro"
+    },
+    {
+     "key": "cf_bact"
+    },
+    {
+     "key": "cf_obs"
+    },
+    {
+     "key": "cf_copro_1"
+    },
+    {
+     "key": "cf_copro_2"
+    },
+    {
+     "key": "cf_copro_3"
+    },
+    {
+     "key": "cf_copro_4"
+    },
+    {
+     "key": "cf_copro_5"
+    },
+    {
+     "key": "cf_notas"
+    },
+    {
+     "key": "cf_responsable"
+    }
+   ]
+  },
+  {
+   "id": "quimica",
+   "storage": {
+    "mode": "nested",
+    "bag": "quimicaDatos",
+    "tipoLab": "Lab_Quimica"
+   },
+   "params": [
+    {
+     "key": "gli"
+    },
+    {
+     "key": "hba_1c"
+    },
+    {
+     "key": "urea"
+    },
+    {
+     "key": "nus"
+    },
+    {
+     "key": "crea"
+    },
+    {
+     "key": "acido_urico"
+    },
+    {
+     "key": "col"
+    },
+    {
+     "key": "tri"
+    },
+    {
+     "key": "hdl"
+    },
+    {
+     "key": "ldl"
+    },
+    {
+     "key": "vldl"
+    },
+    {
+     "key": "got"
+    },
+    {
+     "key": "gpt"
+    },
+    {
+     "key": "fal"
+    },
+    {
+     "key": "amilasa"
+    },
+    {
+     "key": "bt"
+    },
+    {
+     "key": "bd"
+    },
+    {
+     "key": "bi"
+    },
+    {
+     "key": "prot"
+    },
+    {
+     "key": "alb"
+    },
+    {
+     "key": "globulinas"
+    },
+    {
+     "key": "rel_alb_glo"
+    },
+    {
+     "key": "sodio_meql"
+    },
+    {
+     "key": "potasio_meql"
+    },
+    {
+     "key": "cloro_meql"
+    },
+    {
+     "key": "ldh"
+    },
+    {
+     "key": "calcio"
+    },
+    {
+     "key": "ferritina"
+    },
+    {
+     "key": "transferrina"
+    },
+    {
+     "key": "gaso_tipo"
+    },
+    {
+     "key": "gaso_ph"
+    },
+    {
+     "key": "gaso_pco2"
+    },
+    {
+     "key": "gaso_po2"
+    },
+    {
+     "key": "gaso_hco3"
+    },
+    {
+     "key": "gaso_eb"
+    },
+    {
+     "key": "gaso_sat_o2"
+    },
+    {
+     "key": "tsh"
+    },
+    {
+     "key": "t3_total"
+    },
+    {
+     "key": "t4_total"
+    },
+    {
+     "key": "t4_libre"
+    },
+    {
+     "key": "fsh"
+    },
+    {
+     "key": "lh"
+    },
+    {
+     "key": "prolactina"
+    },
+    {
+     "key": "estradiol"
+    },
+    {
+     "key": "progesterona"
+    },
+    {
+     "key": "testosterona"
+    },
+    {
+     "key": "bhcg_cuantitativa"
+    },
+    {
+     "key": "cortisol"
+    },
+    {
+     "key": "insulina"
+    },
+    {
+     "key": "psa_total"
+    },
+    {
+     "key": "volumen_creatinuria"
+    },
+    {
+     "key": "creatinuria"
+    },
+    {
+     "key": "volumen_proteinuria"
+    },
+    {
+     "key": "proteinuria"
+    },
+    {
+     "key": "gasometria"
+    },
+    {
+     "key": "observaciones_quimica"
+    }
+   ]
+  },
+  {
+   "id": "ego",
+   "storage": {
+    "mode": "nested",
+    "bag": "egoDatos",
+    "tipoLab": "Lab_EGO"
+   },
+   "params": [
+    {
+     "key": "volumen"
+    },
+    {
+     "key": "color"
+    },
+    {
+     "key": "olor"
+    },
+    {
+     "key": "aspecto"
+    },
+    {
+     "key": "sedimento"
+    },
+    {
+     "key": "espuma"
+    },
+    {
+     "key": "densidad"
+    },
+    {
+     "key": "ph"
+    },
+    {
+     "key": "prot"
+    },
+    {
+     "key": "glucosa"
+    },
+    {
+     "key": "cetonas"
+    },
+    {
+     "key": "bilirrubinas"
+    },
+    {
+     "key": "sangre"
+    },
+    {
+     "key": "urobilinogeno"
+    },
+    {
+     "key": "nitritos"
+    },
+    {
+     "key": "piocitos"
+    },
+    {
+     "key": "leucocitos"
+    },
+    {
+     "key": "eritrocitos"
+    },
+    {
+     "key": "cel_epiteliales"
+    },
+    {
+     "key": "bacterias"
+    },
+    {
+     "key": "cel_renales"
+    },
+    {
+     "key": "filamento_mucoso"
+    },
+    {
+     "key": "cristales"
+    },
+    {
+     "key": "cilindros_hialinos"
+    },
+    {
+     "key": "cilindros_granuloso"
+    },
+    {
+     "key": "cilindros_hematico"
+    },
+    {
+     "key": "cilindros_cereo"
+    },
+    {
+     "key": "volumen_24h"
+    },
+    {
+     "key": "prot_24h"
+    },
+    {
+     "key": "crea_orina_24h"
+    },
+    {
+     "key": "otros_fisico"
+    },
+    {
+     "key": "pigmentos_biliares"
+    },
+    {
+     "key": "c_gra"
+    },
+    {
+     "key": "cilindros_pigmentados"
+    },
+    {
+     "key": "otros_sedimento"
+    },
+    {
+     "key": "observaciones_1"
+    },
+    {
+     "key": "observaciones_2"
+    },
+    {
+     "key": "responsable_ego"
+    }
+   ]
+  },
+  {
+   "id": "glucosa",
+   "storage": {
+    "mode": "nested",
+    "bag": "glucosaFija",
+    "tipoLab": "Lab_Glucosa_Curva"
+   },
+   "params": [
+    {
+     "key": "basal"
+    },
+    {
+     "key": "hora_basal"
+    },
+    {
+     "key": "resultado_glucosa1"
+    },
+    {
+     "key": "hora_1h"
+    },
+    {
+     "key": "resultado_glucosa2"
+    },
+    {
+     "key": "hora_2h"
+    }
+   ]
+  },
+  {
+   "id": "liquidos",
+   "storage": {
+    "mode": "nested",
+    "bag": "liquidosDatos",
+    "tipoLab": "Lab_Liquidos"
+   },
+   "params": [
+    {
+     "key": "tipo_liquido"
+    },
+    {
+     "key": "volumen"
+    },
+    {
+     "key": "color"
+    },
+    {
+     "key": "aspecto"
+    },
+    {
+     "key": "ph"
+    },
+    {
+     "key": "reaccion"
+    },
+    {
+     "key": "centrif_color"
+    },
+    {
+     "key": "centrif_aspecto"
+    },
+    {
+     "key": "centrif_obs"
+    },
+    {
+     "key": "quimico_glucosa"
+    },
+    {
+     "key": "quimico_proteinas"
+    },
+    {
+     "key": "quimico_obs"
+    },
+    {
+     "key": "micro_leucocitos"
+    },
+    {
+     "key": "micro_pmn"
+    },
+    {
+     "key": "micro_mn"
+    },
+    {
+     "key": "micro_no_procede_obs"
+    },
+    {
+     "key": "sedimento_leucocitos"
+    },
+    {
+     "key": "sedimento_hematies"
+    },
+    {
+     "key": "sedimento_bacterias"
+    },
+    {
+     "key": "sedimento_otros"
+    },
+    {
+     "key": "otros"
+    }
+   ]
+  },
+  {
+   "id": "bacteriologia",
+   "storage": {
+    "mode": "nested",
+    "bag": "bacteriologiaDatos",
+    "tipoLab": "Lab_Bacteriologia"
+   },
+   "params": [
+    {
+     "key": "baciloscopia"
+    },
+    {
+     "key": "examen_fresco"
+    },
+    {
+     "key": "frotis_gram"
+    },
+    {
+     "key": "cultivo_tuberculosis"
+    },
+    {
+     "key": "hemocultivo"
+    },
+    {
+     "key": "urocultivo"
+    },
+    {
+     "key": "coprocultivo"
+    },
+    {
+     "key": "retrocultivo"
+    },
+    {
+     "key": "cultivo_biopsia"
+    },
+    {
+     "key": "cultivo_liquidos"
+    },
+    {
+     "key": "cultivo_secreciones"
+    },
+    {
+     "key": "cultivo_secrecion_vaginal"
+    },
+    {
+     "key": "cultivo_germenes_comunes"
+    },
+    {
+     "key": "germen_aislado"
+    },
+    {
+     "key": "antibiograma_sensible"
+    },
+    {
+     "key": "antibiograma_intermedio"
+    },
+    {
+     "key": "antibiograma_resistente"
+    },
+    {
+     "key": "bact_titulo"
+    },
+    {
+     "key": "bact_diagnostico"
+    },
+    {
+     "key": "bact_comentario"
+    },
+    {
+     "key": "antibiograma_1"
+    },
+    {
+     "key": "antibiograma_2"
+    },
+    {
+     "key": "antibiograma_3"
+    },
+    {
+     "key": "antibiograma_4"
+    },
+    {
+     "key": "antibiograma_5"
+    },
+    {
+     "key": "antibiograma_6"
+    },
+    {
+     "key": "antibiograma_7"
+    },
+    {
+     "key": "antibiograma_8"
+    },
+    {
+     "key": "antibiograma_9"
+    },
+    {
+     "key": "antibiograma_10"
+    },
+    {
+     "key": "antibiograma_11"
+    },
+    {
+     "key": "antibiograma_12"
+    },
+    {
+     "key": "bact_observaciones"
+    }
+   ]
+  },
+  {
+   "id": "patologia",
+   "storage": {
+    "mode": "nested",
+    "bag": "patologiaDatos",
+    "tipoLab": "Lab_Patologia"
+   },
+   "params": [
+    {
+     "key": "citologia_fluido"
+    },
+    {
+     "key": "papanicolaou"
+    },
+    {
+     "key": "histopatologico_grande"
+    },
+    {
+     "key": "histopatologico_mediana"
+    },
+    {
+     "key": "histopatologico_pequena"
+    }
+   ]
+  }
+ ],
+ "columnas": {
+  "hematologia": [
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "G.ROJ",
+    "key": "globulos_rojos"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "G.BLAN",
+    "key": "globulos_blancos"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "HEMO GLOB",
+    "key": "hb"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "HEMA TOCRI",
+    "key": "hto"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "VES",
+    "key": "ves_1_hora"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "V.C.M.",
+    "key": "vcm"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "H.C.M.",
+    "key": "hcm"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "C.H.C.M.",
+    "key": "chcm"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "GRUPO",
+    "key": "grupo_sanguineo"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "RETI",
+    "key": "reticulocitos"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "MIEL",
+    "key": "mielo"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "METAM",
+    "key": "metamie"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "CAYA",
+    "key": "cay"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "SEGM",
+    "key": "seg"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "EOSI",
+    "key": "eosi"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "BASO",
+    "key": "baso"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "LINFO",
+    "key": "linf"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "MONOC",
+    "key": "mon"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "TOTAL",
+    "key": "formula_total"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "PLAQT",
+    "key": "plaquetas"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "T.PROT",
+    "key": "tiempo_protrombina"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "C.PROT",
+    "key": "actividad_protrombina"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "INR",
+    "key": "inr"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "T.SANGR",
+    "key": "t_sangria_min"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "T.COAG",
+    "key": "t_coagulacion_min"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "COM.S.ROJA",
+    "key": "comentario_serie_roja"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "COM.S.BLANCA",
+    "key": "comentario_serie_blanca"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "COM.PLAQUETAS",
+    "key": "comentario_plaquetas"
+   },
+   {
+    "area": "HEMATOLOGIA",
+    "excel": "RESPONSABLE",
+    "key": "responsable_hemato"
+   }
+  ],
+  "quimica": [
+   {
+    "area": "QUIMICAS 1",
+    "excel": "GLI",
+    "key": "gli"
+   },
+   {
+    "area": "QUIMICAS 1",
+    "excel": "CRE",
+    "key": "crea"
+   },
+   {
+    "area": "QUIMICAS 1",
+    "excel": "UREA",
+    "key": "urea"
+   },
+   {
+    "area": "QUIMICAS 1",
+    "excel": "NUS",
+    "key": "nus"
+   },
+   {
+    "area": "QUIMICAS 1",
+    "excel": "COLES",
+    "key": "col"
+   },
+   {
+    "area": "QUIMICAS 1",
+    "excel": "TRIG",
+    "key": "tri"
+   },
+   {
+    "area": "QUIMICAS 1",
+    "excel": "HDL",
+    "key": "hdl"
+   },
+   {
+    "area": "QUIMICAS 1",
+    "excel": "LDL",
+    "key": "ldl"
+   },
+   {
+    "area": "QUIMICAS 1",
+    "excel": "VLDL",
+    "key": "vldl"
+   },
+   {
+    "area": "QUIMICAS 1",
+    "excel": "ACIDO URICO",
+    "key": "acido_urico"
+   },
+   {
+    "area": "QUIMICAS 1",
+    "excel": "CALCIO",
+    "key": "calcio"
+   },
+   {
+    "area": "QUIMICAS 2",
+    "excel": "PAL (FOSFATASA)",
+    "key": "fal"
+   },
+   {
+    "area": "QUIMICAS 2",
+    "excel": "TGO",
+    "key": "got"
+   },
+   {
+    "area": "QUIMICAS 2",
+    "excel": "TGP",
+    "key": "gpt"
+   },
+   {
+    "area": "QUIMICAS 2",
+    "excel": "BILLIR DIR",
+    "key": "bd"
+   },
+   {
+    "area": "QUIMICAS 2",
+    "excel": "BILLIR IND",
+    "key": "bi"
+   },
+   {
+    "area": "QUIMICAS 2",
+    "excel": "BILLIR TOT",
+    "key": "bt"
+   },
+   {
+    "area": "QUIMICAS 2",
+    "excel": "H.B.GLI",
+    "key": "hba_1c"
+   },
+   {
+    "area": "QUIMICAS 2",
+    "excel": "PROT.T.",
+    "key": "prot"
+   },
+   {
+    "area": "QUIMICAS 2",
+    "excel": "ALBUM",
+    "key": "alb"
+   },
+   {
+    "area": "QUIMICAS 2",
+    "excel": "GLOBULINA",
+    "key": "globulinas"
+   },
+   {
+    "area": "QUIMICAS 2",
+    "excel": "AMILASA",
+    "key": "amilasa"
+   },
+   {
+    "area": "QUIMICAS 2",
+    "excel": "VOLUMEN",
+    "key": "volumen_creatinuria"
+   },
+   {
+    "area": "QUIMICAS 2",
+    "excel": "CREATINURIA ORINA",
+    "key": "creatinuria"
+   },
+   {
+    "area": "QUIMICAS 2",
+    "excel": "VOLUMEN",
+    "key": "volumen_proteinuria"
+   },
+   {
+    "area": "QUIMICAS 2",
+    "excel": "PROTENURIA ORINA.",
+    "key": "proteinuria"
+   },
+   {
+    "area": "QUIMICAS 2",
+    "excel": "OBSERVACIONES",
+    "key": "observaciones_quimica"
+   },
+   {
+    "area": "ELECTROLITOS",
+    "excel": "SODIO",
+    "key": "sodio_meql"
+   },
+   {
+    "area": "ELECTROLITOS",
+    "excel": "POTASIO",
+    "key": "potasio_meql"
+   },
+   {
+    "area": "ELECTROLITOS",
+    "excel": "CLORO",
+    "key": "cloro_meql"
+   },
+   {
+    "area": "ELECTROLITOS",
+    "excel": "GASOMETRÍA",
+    "key": "gasometria"
+   }
+  ],
+  "serologia": [
+   {
+    "area": "SEROLOGIA",
+    "excel": "PCR",
+    "key": "pcr"
+   },
+   {
+    "area": "SEROLOGIA",
+    "excel": "LATEX",
+    "key": "fr"
+   },
+   {
+    "area": "SEROLOGIA",
+    "excel": "ASTO",
+    "key": "asto"
+   },
+   {
+    "area": "SEROLOGIA",
+    "excel": "RPR",
+    "key": "rpr"
+   },
+   {
+    "area": "SEROLOGIA",
+    "excel": "WIDAL O",
+    "key": "widal_o"
+   },
+   {
+    "area": "SEROLOGIA",
+    "excel": "WIDAL H",
+    "key": "widal_h"
+   },
+   {
+    "area": "SEROLOGIA",
+    "excel": "WIDAL A",
+    "key": "widal_a"
+   },
+   {
+    "area": "SEROLOGIA",
+    "excel": "WIDAL B",
+    "key": "widal_b"
+   },
+   {
+    "area": "SEROLOGIA",
+    "excel": "T. EMBARAZO",
+    "key": "test_embarazo"
+   },
+   {
+    "area": "SEROLOGIA",
+    "excel": "VIH",
+    "key": "hiv"
+   },
+   {
+    "area": "SEROLOGIA",
+    "excel": "VDRL",
+    "key": "vdrl"
+   },
+   {
+    "area": "SEROLOGIA",
+    "excel": "HEPA B",
+    "key": "hepatitis_b"
+   },
+   {
+    "area": "SEROLOGIA",
+    "excel": "HEPA C",
+    "key": "hepatitis_c"
+   },
+   {
+    "area": "SEROLOGIA",
+    "excel": "PSA",
+    "key": "psa_prueba_rapida"
+   },
+   {
+    "area": "SEROLOGIA",
+    "excel": "OTROS",
+    "key": "otros_serologia"
+   },
+   {
+    "area": "SEROLOGIA",
+    "excel": "RESPONSABLE",
+    "key": "responsable_serologia"
+   },
+   {
+    "area": "COVID",
+    "excel": "IGG",
+    "key": "covid_igg"
+   },
+   {
+    "area": "COVID",
+    "excel": "IGM",
+    "key": "covid_igm"
+   }
+  ],
+  "ego": [
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "VOLUMEN",
+    "key": "volumen"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "COL",
+    "key": "color"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "ASP",
+    "key": "aspecto"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "OLOR",
+    "key": "olor"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "PH REACCION",
+    "key": "ph"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "DENS",
+    "key": "densidad"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "ESPUM",
+    "key": "espuma"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "OTROS",
+    "key": "otros_fisico"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "PROT",
+    "key": "prot"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "GLU",
+    "key": "glucosa"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "CETON",
+    "key": "cetonas"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "BILIRR",
+    "key": "bilirrubinas"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "URUBILI",
+    "key": "urobilinogeno"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "SANGRE(Hb)",
+    "key": "sangre"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "NITRI",
+    "key": "nitritos"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "PIG.BILIAR",
+    "key": "pigmentos_biliares"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "C.EPIT",
+    "key": "cel_epiteliales"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "LEUCO",
+    "key": "leucocitos"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "HEMA GLOB.R",
+    "key": "eritrocitos"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "BACT",
+    "key": "bacterias"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "CEL.REN",
+    "key": "cel_renales"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "C.GRA",
+    "key": "c_gra"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "PIOCI",
+    "key": "piocitos"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "CRIST",
+    "key": "cristales"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "HIAL",
+    "key": "cilindros_hialinos"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "GRAN",
+    "key": "cilindros_granuloso"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "HEMA",
+    "key": "cilindros_hematico"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "PIGM",
+    "key": "cilindros_pigmentados"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "CERE",
+    "key": "cilindros_cereo"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "OTR",
+    "key": "otros_sedimento"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "OBSERVACIONES 1",
+    "key": "observaciones_1"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "OBSERVACIONES 2",
+    "key": "observaciones_2"
+   },
+   {
+    "area": "EXAMEN GENERAL DE ORINA",
+    "excel": "RESPONSABLE",
+    "key": "responsable_ego"
+   }
+  ],
+  "urologia": [
+   {
+    "area": "COPROPARASITOLOGICO",
+    "excel": "SIMPLE",
+    "key": "copro_simple"
+   },
+   {
+    "area": "COPROPARASITOLOGICO",
+    "excel": "SER 1",
+    "key": "copro_muestra_1"
+   },
+   {
+    "area": "COPROPARASITOLOGICO",
+    "excel": "SER 2",
+    "key": "copro_muestra_2"
+   },
+   {
+    "area": "COPROPARASITOLOGICO",
+    "excel": "SER 3",
+    "key": "copro_muestra_3"
+   },
+   {
+    "area": "COPROPARASITOLOGICO",
+    "excel": "S.OCULT",
+    "key": "sangre_oculta"
+   },
+   {
+    "area": "COPROPARASITOLOGICO",
+    "excel": "H.PILORY",
+    "key": "h_pylori_heces"
+   },
+   {
+    "area": "COPROPARASITOLOGICO",
+    "excel": "ROTAVIRUS",
+    "key": "rotavirus"
+   },
+   {
+    "area": "COPROPARASITOLOGICO",
+    "excel": "NOTA:",
+    "key": "nota_copro"
+   },
+   {
+    "area": "COPROPARASITOLOGICO",
+    "excel": "RESPONSABLE",
+    "key": "responsable_copro"
+   },
+   {
+    "area": "CITOLOGIA FECAL",
+    "excel": "COLOR",
+    "key": "cf_color"
+   },
+   {
+    "area": "CITOLOGIA FECAL",
+    "excel": "REST. ALIMENTICIOS",
+    "key": "cf_restos"
+   },
+   {
+    "area": "CITOLOGIA FECAL",
+    "excel": "PH",
+    "key": "cf_ph"
+   },
+   {
+    "area": "CITOLOGIA FECAL",
+    "excel": "CEL. EPITELIALES:",
+    "key": "cf_cel_epit"
+   },
+   {
+    "area": "CITOLOGIA FECAL",
+    "excel": "SANGRE",
+    "key": "cf_sangre"
+   },
+   {
+    "area": "CITOLOGIA FECAL",
+    "excel": "CONSISTENCIA",
+    "key": "cf_consistencia"
+   },
+   {
+    "area": "CITOLOGIA FECAL",
+    "excel": "MOCO",
+    "key": "cf_moco"
+   },
+   {
+    "area": "CITOLOGIA FECAL",
+    "excel": "LEUCO",
+    "key": "cf_leuco"
+   },
+   {
+    "area": "CITOLOGIA FECAL",
+    "excel": "ERITRO",
+    "key": "cf_eritro"
+   },
+   {
+    "area": "CITOLOGIA FECAL",
+    "excel": "BACT",
+    "key": "cf_bact"
+   },
+   {
+    "area": "CITOLOGIA FECAL",
+    "excel": "OBSERVAC.",
+    "key": "cf_obs"
+   },
+   {
+    "area": "CITOLOGIA FECAL",
+    "excel": "COPRO 1",
+    "key": "cf_copro_1"
+   },
+   {
+    "area": "CITOLOGIA FECAL",
+    "excel": "COPRO 2",
+    "key": "cf_copro_2"
+   },
+   {
+    "area": "CITOLOGIA FECAL",
+    "excel": "COPRO 3",
+    "key": "cf_copro_3"
+   },
+   {
+    "area": "CITOLOGIA FECAL",
+    "excel": "COPRO 4",
+    "key": "cf_copro_4"
+   },
+   {
+    "area": "CITOLOGIA FECAL",
+    "excel": "COPRO 5",
+    "key": "cf_copro_5"
+   },
+   {
+    "area": "CITOLOGIA FECAL",
+    "excel": "NOTAS",
+    "key": "cf_notas"
+   },
+   {
+    "area": "CITOLOGIA FECAL",
+    "excel": "RESPONSABLE",
+    "key": "cf_responsable"
+   }
+  ],
+  "bacteriologia": [
+   {
+    "area": "BACTERIOLOGIA",
+    "excel": "TITULO",
+    "key": "bact_titulo"
+   },
+   {
+    "area": "BACTERIOLOGIA",
+    "excel": "EX.FRESCO",
+    "key": "examen_fresco"
+   },
+   {
+    "area": "BACTERIOLOGIA",
+    "excel": "GRAM",
+    "key": "frotis_gram"
+   },
+   {
+    "area": "BACTERIOLOGIA",
+    "excel": "DIAGNOSTICO",
+    "key": "bact_diagnostico"
+   },
+   {
+    "area": "BACTERIOLOGIA",
+    "excel": "COMENTARIO",
+    "key": "bact_comentario"
+   },
+   {
+    "area": "BACTERIOLOGIA",
+    "excel": "ANTIBIOGRAMA 1",
+    "key": "antibiograma_1"
+   },
+   {
+    "area": "BACTERIOLOGIA",
+    "excel": "ANTIBIOGRAMA 2",
+    "key": "antibiograma_2"
+   },
+   {
+    "area": "BACTERIOLOGIA",
+    "excel": "ANTIBIOGRAMA 3",
+    "key": "antibiograma_3"
+   },
+   {
+    "area": "BACTERIOLOGIA",
+    "excel": "ANTIBIOGRAMA 4",
+    "key": "antibiograma_4"
+   },
+   {
+    "area": "BACTERIOLOGIA",
+    "excel": "ANTIBIOGRAMA 5",
+    "key": "antibiograma_5"
+   },
+   {
+    "area": "BACTERIOLOGIA",
+    "excel": "ANTIBIOGRAMA 6",
+    "key": "antibiograma_6"
+   },
+   {
+    "area": "BACTERIOLOGIA",
+    "excel": "ANTIBIOGRAMA 7",
+    "key": "antibiograma_7"
+   },
+   {
+    "area": "BACTERIOLOGIA",
+    "excel": "ANTIBIOGRAMA 8",
+    "key": "antibiograma_8"
+   },
+   {
+    "area": "BACTERIOLOGIA",
+    "excel": "ANTIBIOGRAMA 9",
+    "key": "antibiograma_9"
+   },
+   {
+    "area": "BACTERIOLOGIA",
+    "excel": "ANTIBIOGRAMA 10",
+    "key": "antibiograma_10"
+   },
+   {
+    "area": "BACTERIOLOGIA",
+    "excel": "ANTIBIOGRAMA 11",
+    "key": "antibiograma_11"
+   },
+   {
+    "area": "BACTERIOLOGIA",
+    "excel": "ANTIBIOGRAMA 12",
+    "key": "antibiograma_12"
+   },
+   {
+    "area": "BACTERIOLOGIA",
+    "excel": "OBSERVACIONES",
+    "key": "bact_observaciones"
+   }
+  ]
+ }
+}
