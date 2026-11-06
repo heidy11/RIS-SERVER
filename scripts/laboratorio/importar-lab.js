@@ -67,7 +67,7 @@ async function importar(archivo) {
   const aMano = new Set();
   for (const i of informes) if (i.origen?.tipo !== 'excel') for (const e of i.estudiosRealizados || []) aMano.add(`${norm(i.cod)}|${i.fecha}|${e}`);
 
-  const c = { registros: registros.length, pacientesNuevos: 0, pacientesExistentes: 0, informes: 0, sinAvc: 0, fechaEstimada: 0, conOtros: 0 };
+  const c = { registros: registros.length, pacientesNuevos: 0, pacientesExistentes: 0, informes: 0, sinAvc: 0, fechaEstimada: 0, fechaCorregida: 0, conOtros: 0 };
   const omitidos = { 'sin resultados': 0, 'sin fecha': 0, 'sin nombre': 0, 'fila ya cargada antes': 0, 'ya cargado a mano en el RIS': 0, 'fila repetida en el Excel': 0 };
   const porEstudio = {};
   const fechas = [];
@@ -127,6 +127,7 @@ async function importar(archivo) {
         fecha_solicitud: r.fecha_solicitud, fecha_muestra: r.fecha_muestra, telefono: p.telefono,
         diagnostico: r.diagnostico, muestra: r.muestra, centro_asistencial: CENTRO, estadoInforme: 'FIRMADO',
         ...(r.fecha_estimada && { fecha_estimada: true }),
+        ...(r.fecha_corregida && !r.fecha_estimada && { fecha_corregida: true }),
         ...(Object.keys(r.otros || {}).length && { excel_otros: r.otros }),
       },
       origen: { tipo: 'excel', archivo: r.archivo, hoja: r.hoja, fila: r.fila, lote },
@@ -134,6 +135,7 @@ async function importar(archivo) {
     });
     c.informes++;
     if (r.fecha_estimada) c.fechaEstimada++;
+    else if (r.fecha_corregida) c.fechaCorregida++;
     if (Object.keys(r.otros || {}).length) c.conOtros++;
     fechas.push(r.fecha);
     for (const e of estudios) porEstudio[e] = (porEstudio[e] || 0) + 1;
@@ -147,6 +149,7 @@ async function importar(archivo) {
   console.log(`Pacientes con más de una visita en el Excel: ${c.repetidos || 0} informes extra`);
   console.log(`Informes de pacientes ya registrados en el RIS: ${c.pacientesExistentes}`);
   console.log(`Con fecha estimada (la fila no tenía fecha, revisar): ${c.fechaEstimada}`);
+  console.log(`Fecha de examen mal escrita, se usó la de solicitud/muestra: ${c.fechaCorregida}`);
   console.log(`Con columnas sin campo en el RIS (guardadas aparte): ${c.conOtros}`);
   console.log(`Filas sin AVC (ID por nombre, revisar): ${c.sinAvc}`);
   console.log('No se cargan:', Object.entries(omitidos).filter(([, n]) => n).map(([k, n]) => `${k}: ${n}`).join(' | ') || 'ninguna');

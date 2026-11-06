@@ -38,7 +38,14 @@ PRELLENADOS = {'ego': {'urobilinogeno': 'Normal', 'piocitos': '(-)'}}
 AJUSTES = {
     ('HEMATOLOGIA', 'OBSERVACIONES', 1): ('raiz', 'observaciones'),
     ('QUIMICAS1', 'PAL(FOSFATASA)', 1): ('quimica', 'fal'),
+    ('HEMATOLOGIA', 'ACT', 1): ('hematologia', 'actividad_protrombina'),  # febrero: "ACT." en vez de "C.PROT"
+    ('ANTIBIOGRAMA', 'IGG', 1): ('serologia', 'covid_igg'),  # COVID IgG/IgM quedan bajo el último encabezado
+    ('ANTIBIOGRAMA', 'IGM', 1): ('serologia', 'covid_igm'),
 }
+
+# Fechas posibles de la planilla: lo que cae fuera es un año mal escrito (2006, 1900…)
+FECHA_MIN = '2025-11-01'
+HOY = datetime.date.today().isoformat()
 
 
 def norm(s):
@@ -73,6 +80,10 @@ def fecha(v):
     return ''
 
 
+def valida(f):
+    return f if f and FECHA_MIN <= f <= HOY else ''
+
+
 def mapa_columnas(r1, r2, columnas):
     """columna -> (categoria, clave) o ('otros', encabezado). Las columnas sin encabezado
     (p. ej. más parásitos en COPRO SIMPLE) se suman a la columna anterior."""
@@ -102,7 +113,8 @@ def mapa_columnas(r1, r2, columnas):
 
 def leer(path, columnas):
     wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
-    ws = wb.worksheets[0]
+    # La hoja de datos se llama DAT (o dat); si no está, la primera
+    ws = next((h for h in wb.worksheets if h.title.strip().upper() == 'DAT'), wb.worksheets[0])
     r1, r2 = [list(r) for r in ws.iter_rows(min_row=1, max_row=2, values_only=True)]
     mapa = mapa_columnas(r1, r2, columnas)
     registros, vacias = [], 0
@@ -146,7 +158,8 @@ def leer(path, columnas):
             },
             'emergencia': texto(p['emergencia']), 'consultorio': texto(p['consultorio']),
             'medico': texto(p['medico']), 'diagnostico': texto(p['diagnostico']), 'muestra': texto(p['muestra']),
-            'fecha': fecha(p['fecha_examen']) or fecha(p['fecha_muestra']) or fecha(p['fecha_solicitud']),
+            'fecha': valida(fecha(p['fecha_examen'])) or valida(fecha(p['fecha_muestra'])) or valida(fecha(p['fecha_solicitud'])),
+            'fecha_corregida': bool(fecha(p['fecha_examen'])) and not valida(fecha(p['fecha_examen'])),
             'fecha_solicitud': fecha(p['fecha_solicitud']), 'fecha_muestra': fecha(p['fecha_muestra']),
             'valores': valores, 'raiz': raiz, 'otros': otros,
         })
