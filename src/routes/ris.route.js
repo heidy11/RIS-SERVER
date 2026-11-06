@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const risController = require('../controllers/ris.controller');
 const preprogramacion = require('../controllers/preprogramacion.controller');
+const informeLab = require('../controllers/informeLab.controller');
 const { verifyToken } = require('../middleware/auth.js');
 
 // Protect all RIS routes
@@ -97,5 +98,11 @@ router.get('/preprogramacion', preprogramacion.listar);
 router.post('/preprogramacion', preprogramacion.crear);
 router.put('/preprogramacion/:id', preprogramacion.actualizar);
 router.delete('/preprogramacion/:id', preprogramacion.eliminar);
+
+// Informes de laboratorio (antes solo en el navegador). Los FIRMADOS solo los corrige el admin
+router.get('/informes-lab', informeLab.listar);
+router.post('/informes-lab/migrar', informeLab.migrar);
+router.put('/informes-lab/:id', informeLab.guardar);
+router.delete('/informes-lab/:id', informeLab.eliminar);
 
 module.exports = router;
